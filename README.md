@@ -1,4 +1,4 @@
-# WIA2007GA GROUP ASSIGNMENT (TEAM HZM6)
+# WIA2007 & WIX2002 JOINT GROUP ASSIGNMENT (TEAM HZM6)
 ## Mobile Application Development &amp; Project Management Joint Group Assignment: EcoVentur
 ### An app with a primary focus on promoting eco-conscious behavior, sustainable practices, and community engagement in reducing the environmental impact of urban areas. (SDG 11)
 #### Created with Java (Android Studio)

@@ -3,23 +3,35 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/navigation_home">
+    app:startDestination="@+id/navigation_user">
 
     <fragment
-        android:id="@+id/navigation_home"
-        android:name="com.example.ecoventur.ui.home.HomeFragment"
-        android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" />
+        android:id="@+id/navigation_user"
+        android:name="com.example.ecoventur.ui.user.UserFragment"
+        android:label="@string/title_user"
+        tools:layout="@layout/fragment_user" />
 
     <fragment
-        android:id="@+id/navigation_dashboard"
-        android:name="com.example.ecoventur.ui.dashboard.DashboardFragment"
-        android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
+        android:id="@+id/navigation_transit"
+        android:name="com.example.ecoventur.ui.transit.TransitFragment"
+        android:label="@string/title_transit"
+        tools:layout="@layout/fragment_transit" />
 
     <fragment
-        android:id="@+id/navigation_notifications"
-        android:name="com.example.ecoventur.ui.notifications.NotificationsFragment"
-        android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_notifications" />
+        android:id="@+id/navigation_greenspace"
+        android:name="com.example.ecoventur.ui.greenspace.GreenSpaceFragment"
+        android:label="@string/title_greenspace"
+        tools:layout="@layout/fragment_greenspace" />
+
+    <fragment
+        android:id="@+id/navigation_ecoeducation"
+        android:name="com.example.ecoventur.ui.ecoeducation.EcoEducationFragment"
+        android:label="@string/title_ecoeducation"
+        tools:layout="@layout/fragment_ecoeducation" />
+
+    <fragment
+        android:id="@+id/navigation_ecorewards"
+        android:name="com.example.ecoventur.ui.ecorewards.EcoRewardsFragment"
+        android:label="@string/title_ecorewards"
+        tools:layout="@layout/fragment_ecorewards" />
 </navigation>

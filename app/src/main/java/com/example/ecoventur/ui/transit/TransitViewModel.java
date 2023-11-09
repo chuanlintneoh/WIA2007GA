@@ -1,16 +1,16 @@
-package com.example.ecoventur.ui.home;
+package com.example.ecoventur.ui.transit;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-public class HomeViewModel extends ViewModel {
+public class TransitViewModel extends ViewModel {
 
     private final MutableLiveData<String> mText;
 
-    public HomeViewModel() {
+    public TransitViewModel() {
         mText = new MutableLiveData<>();
-        mText.setValue("This is home fragment");
+        mText.setValue("Green Transit module contents...\n[CHONG BOON PING]");
     }
 
     public LiveData<String> getText() {

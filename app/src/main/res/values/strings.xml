@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">EcoVentur</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
+    <string name="title_user">Profile Management and User Authentication</string>
+    <string name="title_transit">Green Transit</string>
+    <string name="title_greenspace">Green Space Discovery</string>
+    <string name="title_ecoeducation">EcoEducation</string>
+    <string name="title_ecorewards">EcoCoins and EcoRewards</string>
 </resources>

@@ -1,16 +1,16 @@
-package com.example.ecoventur.ui.notifications;
+package com.example.ecoventur.ui.user;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-public class NotificationsViewModel extends ViewModel {
+public class UserViewModel extends ViewModel {
 
     private final MutableLiveData<String> mText;
 
-    public NotificationsViewModel() {
+    public UserViewModel() {
         mText = new MutableLiveData<>();
-        mText.setValue("This is notifications fragment");
+        mText.setValue("Profile Management & User Authentication module contents...\n[GAN SERENE]");
     }
 
     public LiveData<String> getText() {

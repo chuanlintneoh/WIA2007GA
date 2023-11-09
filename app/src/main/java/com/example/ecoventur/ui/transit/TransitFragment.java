@@ -1,4 +1,4 @@
-package com.example.ecoventur.ui.notifications;
+package com.example.ecoventur.ui.transit;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -10,22 +10,22 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.ecoventur.databinding.FragmentNotificationsBinding;
+import com.example.ecoventur.databinding.FragmentTransitBinding;
 
-public class NotificationsFragment extends Fragment {
+public class TransitFragment extends Fragment {
 
-    private FragmentNotificationsBinding binding;
+    private FragmentTransitBinding binding;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        NotificationsViewModel notificationsViewModel =
-                new ViewModelProvider(this).get(NotificationsViewModel.class);
+        TransitViewModel transitViewModel =
+                new ViewModelProvider(this).get(TransitViewModel.class);
 
-        binding = FragmentNotificationsBinding.inflate(inflater, container, false);
+        binding = FragmentTransitBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        final TextView textView = binding.textNotifications;
-        notificationsViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+        final TextView textView = binding.textTransit;
+        transitViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
         return root;
     }
 

@@ -4,11 +4,10 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.ecoventur.databinding.FragmentGreenspaceBinding;
 
@@ -18,14 +17,25 @@ public class GreenSpaceFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        GreenSpaceViewModel GreenSpaceViewModel =
-                new ViewModelProvider(this).get(GreenSpaceViewModel.class);
 
         binding = FragmentGreenspaceBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        final TextView textView = binding.textGreenspace;
-        GreenSpaceViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+        // Bind RecyclerView for Nearby Green Spaces
+        RecyclerView recyclerViewNearbyGreenSpaces = binding.recyclerViewNearbyGreenSpaces;
+        // Set up your adapter and layout manager for recyclerViewNearbyGreenSpaces
+        // ...
+
+        // Bind RecyclerView for Discover Green Events
+        RecyclerView recyclerViewDiscoverGreenEvents = binding.recyclerViewDiscoverGreenEvents;
+        // Set up your adapter and layout manager for recyclerViewDiscoverGreenEvents
+        // ...
+
+        // Bind RecyclerView for My Events Wishlist
+        RecyclerView recyclerViewMyEventsWishlist = binding.recyclerViewMyEventsWishlist;
+        // Set up your adapter and layout manager for recyclerViewMyEventsWishlist
+        // ...
+
         return root;
     }
 

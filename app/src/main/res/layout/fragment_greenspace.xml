@@ -19,17 +19,17 @@
         android:layout_marginTop="5dp"/>
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/cardViewSearch"
+        android:id="@+id/CVSearch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         app:cardCornerRadius="20dp"
         app:cardElevation="20dp">
-
         <SearchView
-            android:id="@+id/searchView"
+            android:id="@+id/SVGreenSpace"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"/>
+<!--            android:queryhint="Explore Green Spaces"/>-->
     </androidx.cardview.widget.CardView>
 
     <androidx.cardview.widget.CardView
@@ -59,12 +59,19 @@
                 android:layout_marginTop="5dp"
                 app:cardCornerRadius="20dp"
                 app:cardElevation="20dp">
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recyclerViewNearbyGreenSpaces"
+                <Button
+                    android:id="@+id/ToggleNearbyGreenSpaces"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
+                    android:layout_height="match_parent"
+                    android:text="Nearby Green Spaces >"
+                    app:cornerRadius="20dp">
+                </Button>
             </androidx.cardview.widget.CardView>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerViewNearbyGreenSpaces"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"/>
             <!-- RecyclerView for Nearby Green Spaces -->
 
             <androidx.cardview.widget.CardView
@@ -74,12 +81,19 @@
                 android:layout_marginTop="5dp"
                 app:cardCornerRadius="20dp"
                 app:cardElevation="20dp">
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recyclerViewDiscoverGreenEvents"
+                <Button
+                    android:id="@+id/ToggleDiscoverGreenEvents"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
+                    android:layout_height="match_parent"
+                    android:text="Discover Green Events >"
+                    app:cornerRadius="20dp">
+                </Button>
             </androidx.cardview.widget.CardView>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerViewDiscoverGreenEvents"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"/>
             <!-- Discover Green Events Dropdown -->
 
             <androidx.cardview.widget.CardView
@@ -87,15 +101,22 @@
                 android:layout_width="match_parent"
                 android:layout_height="72dp"
                 android:layout_marginTop="5dp"
-                android:layout_marginBottom="5dp"
                 app:cardCornerRadius="20dp"
                 app:cardElevation="20dp">
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recyclerViewMyEventsWishlist"
+                <Button
+                    android:id="@+id/ToggleMyEventsWishlist"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
+                    android:layout_height="match_parent"
+                    android:text="My Events Wishlist >"
+                    app:cornerRadius="20dp">
+                </Button>
             </androidx.cardview.widget.CardView>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerViewMyEventsWishlist"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:visibility="gone"/>
             <!-- My Events Wishlist Dropdown -->
         </LinearLayout>
     </ScrollView>

@@ -9,6 +9,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.SearchView;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
@@ -31,14 +33,17 @@ import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class GreenSpaceFragment extends Fragment implements OnMapReadyCallback {
 
     private FragmentGreenspaceBinding binding;
+    private SearchView searchView;
     private MapView mapView;
     private GoogleMap googleMap;
+    private Button buttonNearbyGreenSpaces;
+    private Button buttonDiscoverGreenEvents;
+    private Button buttonMyEventsWishlist;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private static final int PARKS_RADIUS_METERS = 5000;
 
@@ -47,6 +52,8 @@ public class GreenSpaceFragment extends Fragment implements OnMapReadyCallback {
 
         binding = FragmentGreenspaceBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
+
+        searchView = root.findViewById(R.id.SVGreenSpace);
 
         mapView = root.findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
@@ -66,20 +73,16 @@ public class GreenSpaceFragment extends Fragment implements OnMapReadyCallback {
 
         Places.initialize(getActivity().getApplicationContext(), "@string/API_key");
 
-        // Bind RecyclerView for Nearby Green Spaces
         RecyclerView recyclerViewNearbyGreenSpaces = binding.recyclerViewNearbyGreenSpaces;
-        // Set up your adapter and layout manager for recyclerViewNearbyGreenSpaces
-        // ...
-
-        // Bind RecyclerView for Discover Green Events
         RecyclerView recyclerViewDiscoverGreenEvents = binding.recyclerViewDiscoverGreenEvents;
-        // Set up your adapter and layout manager for recyclerViewDiscoverGreenEvents
-        // ...
-
-        // Bind RecyclerView for My Events Wishlist
         RecyclerView recyclerViewMyEventsWishlist = binding.recyclerViewMyEventsWishlist;
-        // Set up your adapter and layout manager for recyclerViewMyEventsWishlist
-        // ...
+
+        buttonNearbyGreenSpaces = root.findViewById(R.id.ToggleNearbyGreenSpaces);
+        buttonNearbyGreenSpaces.setOnClickListener(view -> toggleVisibility(recyclerViewNearbyGreenSpaces));
+        buttonDiscoverGreenEvents = root.findViewById(R.id.ToggleDiscoverGreenEvents);
+        buttonDiscoverGreenEvents.setOnClickListener(view -> toggleVisibility(recyclerViewDiscoverGreenEvents));
+        buttonMyEventsWishlist = root.findViewById(R.id.ToggleMyEventsWishlist);
+        buttonMyEventsWishlist.setOnClickListener(view -> toggleVisibility(recyclerViewMyEventsWishlist));
 
         return root;
     }
@@ -160,6 +163,13 @@ public class GreenSpaceFragment extends Fragment implements OnMapReadyCallback {
                                 });
                     }
                 });
+    }
+    private void toggleVisibility(RecyclerView recyclerView) {
+        if (recyclerView.getVisibility() == View.GONE) {
+            recyclerView.setVisibility(View.VISIBLE);
+        } else {
+            recyclerView.setVisibility(View.GONE);
+        }
     }
     @Override
     public void onResume(){

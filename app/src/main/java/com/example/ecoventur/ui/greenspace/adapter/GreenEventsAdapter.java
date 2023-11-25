@@ -1,0 +1,55 @@
+package com.example.ecoventur.ui.greenspace.adapter;
+
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.ecoventur.R;
+import com.example.ecoventur.ui.greenspace.GreenEvent;
+
+import java.util.ArrayList;
+
+public class GreenEventsAdapter extends RecyclerView.Adapter<GreenEventsAdapter.GreenEventViewHolder> {
+    private ArrayList<GreenEvent> greenEvents;
+    public GreenEventsAdapter(ArrayList<GreenEvent> greenEvents) {
+        this.greenEvents = greenEvents;
+    }
+    @NonNull
+    @Override
+    public GreenEventViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_green_event, parent, false);
+        return new GreenEventViewHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull GreenEventViewHolder holder, int position) {
+        GreenEvent currentEvent = greenEvents.get(position);
+        holder.bind(currentEvent);
+    }
+
+    @Override
+    public int getItemCount() {
+        return greenEvents.size();
+    }
+
+    static class GreenEventViewHolder extends RecyclerView.ViewHolder {
+        TextView TVEventName;
+        TextView TVEventDate_Venue;
+        TextView TVEventEcoCoins;
+        public GreenEventViewHolder(@NonNull View itemView) {
+            super(itemView);
+            TVEventName = itemView.findViewById(R.id.TVEventName);
+            TVEventDate_Venue = itemView.findViewById(R.id.TVDate_Venue);
+            TVEventEcoCoins = itemView.findViewById(R.id.TVEcoCoins);
+        }
+        public void bind(GreenEvent event) {
+            TVEventName.setText(event.name);
+            TVEventDate_Venue.setText(event.date + "\n" + event.venue);
+            TVEventEcoCoins.setText(String.valueOf(event.ecoCoins));
+        }
+    }
+}

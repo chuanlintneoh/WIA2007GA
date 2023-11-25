@@ -3,10 +3,10 @@ package com.example.ecoventur.ui.greenspace;
 import android.media.Image;
 
 public class GreenEvent {
-    String name = "Unspecified Event Name";
-    String date = "Unspecified Date";
-    String venue = "Unspecified Event Venue";
-    int ecoCoins = 0;
+    public String name = "Unspecified Event Name";
+    public String date = "Unspecified Date";
+    public String venue = "Unspecified Event Venue";
+    public int ecoCoins = 0;
     Image image = null;
     String duration = "Unspecified Duration";
     double registrationFee = 0.0;

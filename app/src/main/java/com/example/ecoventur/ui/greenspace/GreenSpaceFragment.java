@@ -15,10 +15,12 @@ import android.widget.SearchView;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.ecoventur.R;
 import com.example.ecoventur.databinding.FragmentGreenspaceBinding;
+import com.example.ecoventur.ui.greenspace.adapter.GreenEventsAdapter;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMap;
@@ -74,7 +76,12 @@ public class GreenSpaceFragment extends Fragment implements OnMapReadyCallback {
         Places.initialize(getActivity().getApplicationContext(), "@string/API_key");
 
         RecyclerView recyclerViewNearbyGreenSpaces = binding.recyclerViewNearbyGreenSpaces;
+
         RecyclerView recyclerViewDiscoverGreenEvents = binding.recyclerViewDiscoverGreenEvents;
+        GreenEventsAdapter adapter = new GreenEventsAdapter(new GreenEventsList().greenEvents);
+        recyclerViewDiscoverGreenEvents.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerViewDiscoverGreenEvents.setAdapter(adapter);
+
         RecyclerView recyclerViewMyEventsWishlist = binding.recyclerViewMyEventsWishlist;
 
         buttonNearbyGreenSpaces = root.findViewById(R.id.ToggleNearbyGreenSpaces);

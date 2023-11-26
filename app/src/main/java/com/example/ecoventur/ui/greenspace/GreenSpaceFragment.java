@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.ecoventur.R;
 import com.example.ecoventur.databinding.FragmentGreenspaceBinding;
 import com.example.ecoventur.ui.greenspace.adapter.GreenEventsAdapter;
+import com.example.ecoventur.ui.greenspace.adapter.GreenSpacesAdapter;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMap;
@@ -79,6 +80,9 @@ public class GreenSpaceFragment extends Fragment implements OnMapReadyCallback {
         Places.initialize(getActivity().getApplicationContext(), "@string/API_key");
 
         RecyclerView recyclerViewNearbyGreenSpaces = binding.recyclerViewNearbyGreenSpaces;
+        GreenSpacesAdapter greenSpacesAdapter = new GreenSpacesAdapter(new GreenSpacesList().getGreenSpaces());//hardcoded
+        recyclerViewNearbyGreenSpaces.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+        recyclerViewNearbyGreenSpaces.setAdapter(greenSpacesAdapter);
 
         CardView cardViewGreenEventsHeader = root.findViewById(R.id.CVGreenEventHeader);
         RecyclerView recyclerViewDiscoverGreenEvents = binding.recyclerViewDiscoverGreenEvents;

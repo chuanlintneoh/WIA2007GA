@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.SearchView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -78,6 +79,7 @@ public class GreenSpaceFragment extends Fragment implements OnMapReadyCallback {
 
         RecyclerView recyclerViewNearbyGreenSpaces = binding.recyclerViewNearbyGreenSpaces;
 
+        CardView cardViewGreenEventsHeader = root.findViewById(R.id.CVGreenEventHeader);
         RecyclerView recyclerViewDiscoverGreenEvents = binding.recyclerViewDiscoverGreenEvents;
 //        GreenEventsAdapter adapter = new GreenEventsAdapter(new GreenEventsList().getGreenEvents());//hardcoded
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
@@ -90,7 +92,10 @@ public class GreenSpaceFragment extends Fragment implements OnMapReadyCallback {
         buttonNearbyGreenSpaces = root.findViewById(R.id.ToggleNearbyGreenSpaces);
         buttonNearbyGreenSpaces.setOnClickListener(view -> toggleVisibility(recyclerViewNearbyGreenSpaces));
         buttonDiscoverGreenEvents = root.findViewById(R.id.ToggleDiscoverGreenEvents);
-        buttonDiscoverGreenEvents.setOnClickListener(view -> toggleVisibility(recyclerViewDiscoverGreenEvents));
+        buttonDiscoverGreenEvents.setOnClickListener(view -> {
+            toggleVisibility(cardViewGreenEventsHeader);
+            toggleVisibility(recyclerViewDiscoverGreenEvents);
+        });
         buttonMyEventsWishlist = root.findViewById(R.id.ToggleMyEventsWishlist);
         buttonMyEventsWishlist.setOnClickListener(view -> toggleVisibility(recyclerViewMyEventsWishlist));
 
@@ -174,11 +179,11 @@ public class GreenSpaceFragment extends Fragment implements OnMapReadyCallback {
                     }
                 });
     }
-    private void toggleVisibility(RecyclerView recyclerView) {
-        if (recyclerView.getVisibility() == View.GONE) {
-            recyclerView.setVisibility(View.VISIBLE);
+    private void toggleVisibility(View view) {
+        if (view.getVisibility() == View.GONE) {
+            view.setVisibility(View.VISIBLE);
         } else {
-            recyclerView.setVisibility(View.GONE);
+            view.setVisibility(View.GONE);
         }
     }
     @Override

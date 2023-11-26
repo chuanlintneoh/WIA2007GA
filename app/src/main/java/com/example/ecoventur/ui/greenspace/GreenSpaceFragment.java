@@ -52,11 +52,8 @@ public class GreenSpaceFragment extends Fragment implements OnMapReadyCallback {
     private SearchView searchView;
     private MapView mapView;
     private GoogleMap googleMap;
-    private Button buttonNearbyGreenSpaces;
-    private Button buttonDiscoverGreenEvents;
-    private Button buttonMyEventsWishlist;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
-    private static final int PARKS_RADIUS_METERS = 5000;
+//    private static final int PARKS_RADIUS_METERS = 5000;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -70,36 +67,36 @@ public class GreenSpaceFragment extends Fragment implements OnMapReadyCallback {
             public boolean onQueryTextSubmit(String query) {
                 String search = searchView.getQuery().toString();
                 List<Address> searchResults = null;
-                if (search != null || !search.equals("")) {
-                    Geocoder geocoder = new Geocoder(getContext());
-                    try {
-                        searchResults = geocoder.getFromLocationName(search, 1);
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                Geocoder geocoder = new Geocoder(requireContext());
+                try {
+                    searchResults = geocoder.getFromLocationName(search, 1);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                if (searchResults == null || searchResults.size() == 0) {
+                    Toast.makeText(getContext(), "No results found for \"" + search + "\"", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Address address = searchResults.get(0);
+                    LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
+                    googleMap.clear();
+                    googleMap.addMarker(new MarkerOptions().position(latLng).title(search));
+                    googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+                    StringBuilder addressText = new StringBuilder();
+                    for (int i = 0; i <= address.getMaxAddressLineIndex(); i++) {
+                        addressText.append(address.getAddressLine(i)).append(", ");
                     }
-                    if (searchResults == null || searchResults.size() == 0) {
-                        Toast.makeText(getContext(), "No results found for \"" + search + "\"", Toast.LENGTH_SHORT).show();
-                    }
-                    else {
-                        Address address = searchResults.get(0);
-                        LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
-                        googleMap.clear();
-                        googleMap.addMarker(new MarkerOptions().position(latLng).title(search));
-                        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18));
-                        StringBuilder addressText = new StringBuilder();
-                        for (int i = 0; i <= address.getMaxAddressLineIndex(); i++) {
-                            addressText.append(address.getAddressLine(i)).append(", ");
-                        }
-                        String formattedAddress = addressText.toString().replaceAll(", $", "");
-                        Toast.makeText(getContext(), formattedAddress, Toast.LENGTH_LONG).show();
-                    }
+                    String formattedAddress = addressText.toString().replaceAll(", $", "");
+                    Toast.makeText(getContext(), formattedAddress, Toast.LENGTH_LONG).show();
                 }
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                googleMap.clear();
+                if (googleMap != null){
+                    googleMap.clear();
+                }
                 return false;
             }
         });
@@ -107,18 +104,6 @@ public class GreenSpaceFragment extends Fragment implements OnMapReadyCallback {
         mapView = root.findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
-
-        mapView.getMapAsync(googleMap -> {
-            if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-            }
-            googleMap.setMyLocationEnabled(true);
-            // Add a marker in Sydney and move the camera
-            //LatLng sydney = new LatLng(-34, 151);
-            //googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-            //googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-
-        });
 
         Places.initialize(getActivity().getApplicationContext(), "@string/API_key");
 
@@ -142,14 +127,14 @@ public class GreenSpaceFragment extends Fragment implements OnMapReadyCallback {
         recyclerViewMyEventsWishlist.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerViewMyEventsWishlist.setAdapter(wishlistAdapter);
 
-        buttonNearbyGreenSpaces = root.findViewById(R.id.ToggleNearbyGreenSpaces);
+        Button buttonNearbyGreenSpaces = root.findViewById(R.id.ToggleNearbyGreenSpaces);
         buttonNearbyGreenSpaces.setOnClickListener(view -> toggleVisibility(recyclerViewNearbyGreenSpaces));
-        buttonDiscoverGreenEvents = root.findViewById(R.id.ToggleDiscoverGreenEvents);
+        Button buttonDiscoverGreenEvents = root.findViewById(R.id.ToggleDiscoverGreenEvents);
         buttonDiscoverGreenEvents.setOnClickListener(view -> {
             toggleVisibility(cardViewGreenEventsHeader);
             toggleVisibility(recyclerViewDiscoverGreenEvents);
         });
-        buttonMyEventsWishlist = root.findViewById(R.id.ToggleMyEventsWishlist);
+        Button buttonMyEventsWishlist = root.findViewById(R.id.ToggleMyEventsWishlist);
         buttonMyEventsWishlist.setOnClickListener(view -> {
             toggleVisibility(cardViewEventsWishlistHeader);
             toggleVisibility(recyclerViewMyEventsWishlist);
@@ -163,78 +148,60 @@ public class GreenSpaceFragment extends Fragment implements OnMapReadyCallback {
         googleMap = map;
 
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
         } else {
-            enableMyLocation();
-            moveToCurrentLocation();
-            fetchAndDisplayParks();
+            googleMap.setMyLocationEnabled(true);
+            // hardcoded default location: Malaysia
+            LatLng malaysia = new LatLng(4.2105, 101.9758);
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(malaysia, 5));
+//            fetchAndDisplayParks();
         }
         googleMap.getUiSettings().setZoomControlsEnabled(true);
     }
 
-    private void requestLocationPermission() {
-        ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
-    }
-
-    private void enableMyLocation() {
-        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-        } else {
-            googleMap.setMyLocationEnabled(true);
-        }
-    }
-
-    private void moveToCurrentLocation() {
-        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-        } else {
-            googleMap.setMyLocationEnabled(true);
-        }
-    }
-
-    private void fetchAndDisplayParks() {
-        PlacesClient placesClient = Places.createClient(requireContext());
-
-        FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext());
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
-            return;
-        }
-        fusedLocationProviderClient.getLastLocation()
-                .addOnSuccessListener(requireActivity(), location -> {
-                    if (location != null) {
-                        LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
-
-                        List<Place.Field> placeFields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG);
-
-                        FindCurrentPlaceRequest request = FindCurrentPlaceRequest.newInstance(placeFields);
-
-                        placesClient.findCurrentPlace(request)
-                                .addOnSuccessListener((response) -> {
-                                    for (PlaceLikelihood placeLikelihood : response.getPlaceLikelihoods()) {
-                                        Place place = placeLikelihood.getPlace();
-                                        LatLng parkLocation = place.getLatLng();
-
-                                        MarkerOptions markerOptions = new MarkerOptions()
-                                                .position(parkLocation)
-                                                .title(place.getName());
-
-                                        googleMap.addMarker(markerOptions);
-                                    }
-                                })
-                                .addOnFailureListener((exception) -> {
-                                    Log.e(TAG, "Place not found: " + exception.getMessage());
-                                });
-                    }
-                });
-    }
+//    private void fetchAndDisplayParks() {
+//        PlacesClient placesClient = Places.createClient(requireContext());
+//
+//        FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext());
+//        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//            // TODO: Consider calling
+//            //    ActivityCompat#requestPermissions
+//            // here to request the missing permissions, and then overriding
+//            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+//            //                                          int[] grantResults)
+//            // to handle the case where the user grants the permission. See the documentation
+//            // for ActivityCompat#requestPermissions for more details.
+//            ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+//            return;
+//        }
+//        fusedLocationProviderClient.getLastLocation()
+//                .addOnSuccessListener(requireActivity(), location -> {
+//                    if (location != null) {
+//                        LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
+//
+//                        List<Place.Field> placeFields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG);
+//
+//                        FindCurrentPlaceRequest request = FindCurrentPlaceRequest.newInstance(placeFields);
+//
+//                        placesClient.findCurrentPlace(request)
+//                                .addOnSuccessListener((response) -> {
+//                                    for (PlaceLikelihood placeLikelihood : response.getPlaceLikelihoods()) {
+//                                        Place place = placeLikelihood.getPlace();
+//                                        LatLng parkLocation = place.getLatLng();
+//
+//                                        MarkerOptions markerOptions = new MarkerOptions()
+//                                                .position(parkLocation)
+//                                                .title(place.getName());
+//
+//                                        googleMap.addMarker(markerOptions);
+//                                    }
+//                                })
+//                                .addOnFailureListener((exception) -> {
+//                                    Log.e(TAG, "Place not found: " + exception.getMessage());
+//                                });
+//                    }
+//                });
+//    }
     private void toggleVisibility(View view) {
         if (view.getVisibility() == View.GONE) {
             view.setVisibility(View.VISIBLE);

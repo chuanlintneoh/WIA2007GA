@@ -41,6 +41,7 @@ import java.util.List;
 
 public class GreenSpaceFragment extends Fragment implements OnMapReadyCallback {
 
+    private String UID = "uaPJZguefgcNGyl0Ig2sy1Yq6tu1";// to be passed from MainActivity during login
     private FragmentGreenspaceBinding binding;
     private SearchView searchView;
     private MapView mapView;
@@ -83,11 +84,16 @@ public class GreenSpaceFragment extends Fragment implements OnMapReadyCallback {
         RecyclerView recyclerViewDiscoverGreenEvents = binding.recyclerViewDiscoverGreenEvents;
 //        GreenEventsAdapter adapter = new GreenEventsAdapter(new GreenEventsList().getGreenEvents());//hardcoded
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-        GreenEventsAdapter adapter = new GreenEventsAdapter(new GreenEventsList(firestore).getGreenEvents());//firestore
+        GreenEventsAdapter eventsAdapter = new GreenEventsAdapter(new GreenEventsList(firestore).getGreenEvents());//firestore
         recyclerViewDiscoverGreenEvents.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerViewDiscoverGreenEvents.setAdapter(adapter);
+        recyclerViewDiscoverGreenEvents.setAdapter(eventsAdapter);
 
+        CardView cardViewEventsWishlistHeader = root.findViewById(R.id.CVEventsWishlistHeader);
         RecyclerView recyclerViewMyEventsWishlist = binding.recyclerViewMyEventsWishlist;
+        firestore = FirebaseFirestore.getInstance();
+        GreenEventsAdapter wishlistAdapter = new GreenEventsAdapter(new GreenEventsList(firestore, UID).getGreenEvents());//user's saved green events wishlist
+        recyclerViewMyEventsWishlist.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerViewMyEventsWishlist.setAdapter(wishlistAdapter);
 
         buttonNearbyGreenSpaces = root.findViewById(R.id.ToggleNearbyGreenSpaces);
         buttonNearbyGreenSpaces.setOnClickListener(view -> toggleVisibility(recyclerViewNearbyGreenSpaces));
@@ -97,7 +103,10 @@ public class GreenSpaceFragment extends Fragment implements OnMapReadyCallback {
             toggleVisibility(recyclerViewDiscoverGreenEvents);
         });
         buttonMyEventsWishlist = root.findViewById(R.id.ToggleMyEventsWishlist);
-        buttonMyEventsWishlist.setOnClickListener(view -> toggleVisibility(recyclerViewMyEventsWishlist));
+        buttonMyEventsWishlist.setOnClickListener(view -> {
+            toggleVisibility(cardViewEventsWishlistHeader);
+            toggleVisibility(recyclerViewMyEventsWishlist);
+        });
 
         return root;
     }

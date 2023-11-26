@@ -1,6 +1,9 @@
 package com.example.ecoventur.ui.greenspace;
 
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 
@@ -27,6 +30,10 @@ public class GreenEventsList {
         //firestore data
         retrieveFirestoreData(db);
     }
+    public GreenEventsList(FirebaseFirestore db, String UID) {
+        //user's saved green events wishlist
+        retrieveUserWishlist(db, UID);
+    }
     private void retrieveFirestoreData(FirebaseFirestore db) {
         //retrieve data from firestore
         db.collection("greenEvents")
@@ -35,6 +42,34 @@ public class GreenEventsList {
                     if (task.isSuccessful()) {
                         for (GreenEvent event : task.getResult().toObjects(GreenEvent.class)) {
                             greenEvents.add(event);
+                        }
+                    } else {
+                        System.out.println("Error getting documents: " + task.getException());
+                    }
+                });
+    }
+    private void retrieveUserWishlist(FirebaseFirestore db, String UID) {
+        //retrieve user's wishlist from firestore
+        db.collection("users").document(UID).collection("eventsWishlist")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            DocumentReference eventRef = document.getDocumentReference("eventId");
+                            if (eventRef != null) {
+                                eventRef.get()
+                                        .addOnCompleteListener(eventTask -> {
+                                            if (eventTask.isSuccessful()) {
+                                                DocumentSnapshot eventSnapshot = eventTask.getResult();
+                                                if (eventSnapshot.exists()) {
+                                                    GreenEvent event = eventSnapshot.toObject(GreenEvent.class);
+                                                    if (event != null){
+                                                        greenEvents.add(event);
+                                                    }
+                                                }
+                                            }
+                                        });
+                            }
                         }
                     } else {
                         System.out.println("Error getting documents: " + task.getException());

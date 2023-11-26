@@ -33,6 +33,7 @@ import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.model.PlaceLikelihood;
 import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Arrays;
 import java.util.List;
@@ -78,7 +79,9 @@ public class GreenSpaceFragment extends Fragment implements OnMapReadyCallback {
         RecyclerView recyclerViewNearbyGreenSpaces = binding.recyclerViewNearbyGreenSpaces;
 
         RecyclerView recyclerViewDiscoverGreenEvents = binding.recyclerViewDiscoverGreenEvents;
-        GreenEventsAdapter adapter = new GreenEventsAdapter(new GreenEventsList().greenEvents);
+//        GreenEventsAdapter adapter = new GreenEventsAdapter(new GreenEventsList().getGreenEvents());//hardcoded
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+        GreenEventsAdapter adapter = new GreenEventsAdapter(new GreenEventsList(firestore).getGreenEvents());//firestore
         recyclerViewDiscoverGreenEvents.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerViewDiscoverGreenEvents.setAdapter(adapter);
 

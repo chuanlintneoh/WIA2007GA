@@ -47,9 +47,9 @@ public class GreenEventsAdapter extends RecyclerView.Adapter<GreenEventsAdapter.
             TVEventEcoCoins = itemView.findViewById(R.id.TVEcoCoins);
         }
         public void bind(GreenEvent event) {
-            TVEventName.setText(event.name);
-            TVEventDate_Venue.setText(event.date + "\n" + event.venue);
-            TVEventEcoCoins.setText(String.valueOf(event.ecoCoins));
+            TVEventName.setText(event.getName());
+            TVEventDate_Venue.setText(event.getDate() + "\n" + event.getVenue());
+            TVEventEcoCoins.setText(String.valueOf(event.getEcoCoins()));
         }
     }
 }

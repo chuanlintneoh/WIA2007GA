@@ -28,8 +28,9 @@
         <SearchView
             android:id="@+id/SVGreenSpace"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-<!--            android:queryhint="Explore Green Spaces"/>-->
+            android:layout_height="wrap_content"
+            android:queryHint="Explore Green Spaces"
+            android:iconifiedByDefault="false"/>
     </androidx.cardview.widget.CardView>
 
     <androidx.cardview.widget.CardView

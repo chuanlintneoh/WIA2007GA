@@ -4,6 +4,8 @@ import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.SearchView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
@@ -25,6 +28,7 @@ import com.example.ecoventur.ui.greenspace.adapter.GreenEventsAdapter;
 import com.example.ecoventur.ui.greenspace.adapter.GreenSpacesAdapter;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -37,6 +41,7 @@ import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -60,6 +65,44 @@ public class GreenSpaceFragment extends Fragment implements OnMapReadyCallback {
         View root = binding.getRoot();
 
         searchView = root.findViewById(R.id.SVGreenSpace);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                String search = searchView.getQuery().toString();
+                List<Address> searchResults = null;
+                if (search != null || !search.equals("")) {
+                    Geocoder geocoder = new Geocoder(getContext());
+                    try {
+                        searchResults = geocoder.getFromLocationName(search, 1);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    if (searchResults == null || searchResults.size() == 0) {
+                        Toast.makeText(getContext(), "No results found for \"" + search + "\"", Toast.LENGTH_SHORT).show();
+                    }
+                    else {
+                        Address address = searchResults.get(0);
+                        LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
+                        googleMap.clear();
+                        googleMap.addMarker(new MarkerOptions().position(latLng).title(search));
+                        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18));
+                        StringBuilder addressText = new StringBuilder();
+                        for (int i = 0; i <= address.getMaxAddressLineIndex(); i++) {
+                            addressText.append(address.getAddressLine(i)).append(", ");
+                        }
+                        String formattedAddress = addressText.toString().replaceAll(", $", "");
+                        Toast.makeText(getContext(), formattedAddress, Toast.LENGTH_LONG).show();
+                    }
+                }
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                googleMap.clear();
+                return false;
+            }
+        });
 
         mapView = root.findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);

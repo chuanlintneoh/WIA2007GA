@@ -42,6 +42,7 @@ import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -52,8 +53,8 @@ public class GreenSpaceFragment extends Fragment implements OnMapReadyCallback {
     private SearchView searchView;
     private MapView mapView;
     private GoogleMap googleMap;
+    private ArrayList<GreenSpace> nearbyGreenSpaces = new ArrayList<GreenSpace>();
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
-//    private static final int PARKS_RADIUS_METERS = 5000;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -105,10 +106,13 @@ public class GreenSpaceFragment extends Fragment implements OnMapReadyCallback {
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
 
-        Places.initialize(getActivity().getApplicationContext(), "@string/API_key");
+//        Places.initialize(getActivity().getApplicationContext(), "@string/API_key");
 
         RecyclerView recyclerViewNearbyGreenSpaces = binding.recyclerViewNearbyGreenSpaces;
-        GreenSpacesAdapter greenSpacesAdapter = new GreenSpacesAdapter(new GreenSpacesList().getGreenSpaces());//hardcoded
+        nearbyGreenSpaces = new GreenSpacesList().getGreenSpaces();//hardcoded
+//        nearbyGreenSpaces = new GreenSpacesList(requireActivity(),5).getGreenSpaces());//retrieved using google places api based on user's current location
+        System.out.println("No. of nearby places: " + nearbyGreenSpaces.size());
+        GreenSpacesAdapter greenSpacesAdapter = new GreenSpacesAdapter(nearbyGreenSpaces);
         recyclerViewNearbyGreenSpaces.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
         recyclerViewNearbyGreenSpaces.setAdapter(greenSpacesAdapter);
 
@@ -154,54 +158,10 @@ public class GreenSpaceFragment extends Fragment implements OnMapReadyCallback {
             // hardcoded default location: Malaysia
             LatLng malaysia = new LatLng(4.2105, 101.9758);
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(malaysia, 5));
-//            fetchAndDisplayParks();
         }
         googleMap.getUiSettings().setZoomControlsEnabled(true);
     }
 
-//    private void fetchAndDisplayParks() {
-//        PlacesClient placesClient = Places.createClient(requireContext());
-//
-//        FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext());
-//        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//            // TODO: Consider calling
-//            //    ActivityCompat#requestPermissions
-//            // here to request the missing permissions, and then overriding
-//            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-//            //                                          int[] grantResults)
-//            // to handle the case where the user grants the permission. See the documentation
-//            // for ActivityCompat#requestPermissions for more details.
-//            ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
-//            return;
-//        }
-//        fusedLocationProviderClient.getLastLocation()
-//                .addOnSuccessListener(requireActivity(), location -> {
-//                    if (location != null) {
-//                        LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
-//
-//                        List<Place.Field> placeFields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG);
-//
-//                        FindCurrentPlaceRequest request = FindCurrentPlaceRequest.newInstance(placeFields);
-//
-//                        placesClient.findCurrentPlace(request)
-//                                .addOnSuccessListener((response) -> {
-//                                    for (PlaceLikelihood placeLikelihood : response.getPlaceLikelihoods()) {
-//                                        Place place = placeLikelihood.getPlace();
-//                                        LatLng parkLocation = place.getLatLng();
-//
-//                                        MarkerOptions markerOptions = new MarkerOptions()
-//                                                .position(parkLocation)
-//                                                .title(place.getName());
-//
-//                                        googleMap.addMarker(markerOptions);
-//                                    }
-//                                })
-//                                .addOnFailureListener((exception) -> {
-//                                    Log.e(TAG, "Place not found: " + exception.getMessage());
-//                                });
-//                    }
-//                });
-//    }
     private void toggleVisibility(View view) {
         if (view.getVisibility() == View.GONE) {
             view.setVisibility(View.VISIBLE);

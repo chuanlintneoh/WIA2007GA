@@ -1,21 +1,39 @@
 package com.example.ecoventur.ui.greenspace;
 
+import static com.google.maps.model.PlaceType.PARK;
+
+import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.location.Location;
+
+import androidx.core.app.ActivityCompat;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.model.LatLng;
+//import com.google.android.gms.maps.model.LatLng;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.model.PlaceLikelihood;
 import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.maps.GeoApiContext;
+import com.google.maps.model.LatLng;
+import com.google.maps.NearbySearchRequest;
+import com.google.maps.PendingResult;
+import com.google.maps.PlacesApi;
+import com.google.maps.model.PlacesSearchResponse;
+import com.google.maps.model.PlacesSearchResult;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class GreenSpacesList {
+    private Location currentLocation;
+    private int placesCount = 5;
+    private PlacesClient placesClient;
     private ArrayList<GreenSpace> greenSpaces = new ArrayList<GreenSpace>();
     private Context context;
     public GreenSpacesList() {
@@ -29,34 +47,97 @@ public class GreenSpacesList {
         space.setMapsURL("https://maps.app.goo.gl/e9KBcMLR2dGc3PJV7");
         greenSpaces.add(space);
     }
-    public GreenSpacesList(Context context) {
+    public GreenSpacesList(Context context, int placesCount) {
         this.context = context;
-        Places.initialize(context, "@string/API_KEY");
-
-        PlacesClient placesClient = Places.createClient(context);
-
-        //Get user's current location
+        this.placesCount = placesCount;
+        Places.initialize(context, "@string/API_key");
+        placesClient = Places.createClient(context);
+        fetchNearbyGreenSpaces();
+    }
+    private void fetchNearbyGreenSpaces() {
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                return;
+            }
+        }
         FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context);
-        fusedLocationProviderClient.getLastLocation()
-                .addOnSuccessListener(location -> {
-                    if (location != null) {
-                        //Use the location to get the current place
-                        LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
+        fusedLocationProviderClient.getLastLocation().addOnSuccessListener(location -> {
+            if (location != null) {
+                this.currentLocation = location;
+                LatLng currentLatLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
 
-                        //Fields to be requested
-                        List<Place.Field> placeFields = Arrays.asList(Place.Field.NAME, Place.Field.LAT_LNG, Place.Field.RATING, Place.Field.OPENING_HOURS, Place.Field.ADDRESS, Place.Field.PRICE_LEVEL, Place.Field.PHOTO_METADATAS);
+                GeoApiContext geoApiContext = new GeoApiContext.Builder()
+                        .apiKey("@string/API_key")
+                        .build();
 
-                        //Then fetch the nearby parks
-                        FindCurrentPlaceRequest request = FindCurrentPlaceRequest.newInstance(placeFields);
-                        placesClient.findCurrentPlace(request)
-                                .addOnSuccessListener((response) -> {
-                                    for (PlaceLikelihood placeLikelihood : response.getPlaceLikelihoods()) {
-                                        Place place = placeLikelihood.getPlace();
-                                        //Then display the parks on the map
-                                    }
-                                });
+                NearbySearchRequest request = PlacesApi.nearbySearchQuery(geoApiContext, currentLatLng);
+                request.radius(5000);
+                request.type(PARK);
+
+                request.setCallback(new PendingResult.Callback<PlacesSearchResponse>() {
+                    @Override
+                    public void onResult(PlacesSearchResponse result) {
+                        for (PlacesSearchResult place: result.results) {
+                            LatLng locationLatLng = place.geometry.location;
+                            com.google.android.gms.maps.model.LatLng location = new com.google.android.gms.maps.model.LatLng(place.geometry.location.lat, place.geometry.location.lng);
+                            GreenSpace space = new GreenSpace(place.placeId, place.name, getApproxDistance(currentLatLng,locationLatLng), place.rating, location, place.openingHours, place.formattedAddress);
+                            greenSpaces.add(space);
+                            if (greenSpaces.size() >= placesCount) {
+                                break;
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Throwable e) {
+
                     }
                 });
+
+//                FindCurrentPlaceRequest request = FindCurrentPlaceRequest.newInstance(Arrays.asList(Place.Field.NAME, Place.Field.LAT_LNG, Place.Field.RATING, Place.Field.PHOTO_METADATAS, Place.Field.TYPES));
+//                placesClient.findCurrentPlace(request).addOnSuccessListener(response -> {
+//                    List<PlaceLikelihood> placeLikelihoods = response.getPlaceLikelihoods();
+//                    for (PlaceLikelihood placeLikelihood : placeLikelihoods) {
+//                        Place place = placeLikelihood.getPlace();
+//                        List<Place.Type> placeTypes = place.getTypes();
+//                        for (Place.Type type: placeTypes) {
+//                            if (type == Place.Type.PARK || type == Place.Type.NATURAL_FEATURE) {
+//                                String placeName = place.getName();
+//                                LatLng placeLatLng = place.getLatLng();
+//                                double placeRating = place.getRating();
+//                                String placeImage = place.getPhotoMetadatas().get(0).getAttributions();
+//                                double approxDistance = getApproxDistance(currentLatLng, placeLatLng);
+//
+//                                GreenSpace space = new GreenSpace(placeImage, placeName, approxDistance, placeRating);
+//                                greenSpaces.add(space);
+//                            }
+//                        }
+//                        if (greenSpaces.size() >= placesCount) {
+//                            break;
+//                        }
+//                    }
+//                });
+            }
+        });
+    }
+    private double getApproxDistance(LatLng currentLatLng, LatLng placeLatLng) {
+        // https://www.movable-type.co.uk/scripts/latlong.html
+        // Haversine formula
+        double lat1 = currentLatLng.lat;
+        double lon1 = currentLatLng.lng;
+        double lat2 = placeLatLng.lat;
+        double lon2 = placeLatLng.lng;
+        double R = 6371e3; // metres
+        double φ1 = Math.toRadians(lat1);
+        double φ2 = Math.toRadians(lat2);
+        double Δφ = Math.toRadians(lat2-lat1);
+        double Δλ = Math.toRadians(lon2-lon1);
+        double a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+                Math.cos(φ1) * Math.cos(φ2) *
+                        Math.sin(Δλ/2) * Math.sin(Δλ/2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return R * c / 1000;
     }
     public ArrayList<GreenSpace> getGreenSpaces() {
         return greenSpaces;

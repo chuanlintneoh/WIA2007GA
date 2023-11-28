@@ -153,12 +153,16 @@ public class GreenSpaceFragment extends Fragment implements OnMapReadyCallback {
 
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
-        } else {
-            googleMap.setMyLocationEnabled(true);
-            // hardcoded default location: Malaysia
-            LatLng malaysia = new LatLng(4.2105, 101.9758);
-            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(malaysia, 5));
+            if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(getContext(), "Location permission not granted", Toast.LENGTH_SHORT).show();
+                return;
+            }
         }
+        googleMap.setMyLocationEnabled(true);
+        googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+        // hardcoded default location: Malaysia
+        LatLng malaysia = new LatLng(4.2105, 101.9758);
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(malaysia, 5));
         googleMap.getUiSettings().setZoomControlsEnabled(true);
     }
 

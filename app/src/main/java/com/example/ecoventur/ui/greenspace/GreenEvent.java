@@ -40,12 +40,16 @@ public class GreenEvent {
         this.venue = venue;
         this.ecoCoins = ecoCoins;
     }
-    public GreenEvent (String eventId, String UID, LatLng currentLatLng) {
+    public GreenEvent (String eventId, String UID, LatLng currentLatLng, FirestoreDataListener listener) {
         // for Firestore (retrieving details of specified GreenEvent)
         this.eventId = eventId;
-        fetchDetailsFromFirestore(UID, currentLatLng);
+        fetchDetailsFromFirestore(UID, currentLatLng, listener);
     }
-    public void fetchDetailsFromFirestore(String UID, LatLng currentLatLng) {
+    public interface FirestoreDataListener {
+        void onDataLoaded(GreenEvent event);
+        void onFailure(Exception e);
+    }
+    public void fetchDetailsFromFirestore(String UID, LatLng currentLatLng, FirestoreDataListener listener) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("greenEvents").document(eventId)
                 .get()
@@ -70,9 +74,10 @@ public class GreenEvent {
                         if (document.contains("interested")) this.setInterested(document.getLong("interested").intValue());
                         this.setTncLink(document.getString("tncLink"));
                         this.setDetailsLink(document.getString("detailsLink"));
+                        listener.onDataLoaded(this);
                     }
                     else {
-                        System.out.println("Error getting document: " + task.getException());
+                        listener.onFailure(new Exception("Document does not exist."));
                     }
                 });
         db.collection("users").document(UID).
@@ -82,8 +87,8 @@ public class GreenEvent {
                     if (task.isSuccessful() && task.getResult() != null) {
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             String eventPath = "greenEvents/" + eventId;
-                            String eventRef = document.getString("eventId");
-                            if (eventRef != null && eventRef.equals(eventPath)){
+                            String eventRef = String.valueOf(document.getDocumentReference("eventId"));
+                            if (eventRef.equals(eventPath)){
                                 this.setSavedToWishlist(true);
                                 break;
                             }

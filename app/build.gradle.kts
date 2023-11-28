@@ -38,7 +38,7 @@ android {
 dependencies {
 
     implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("com.google.android.material:material:1.10.0")
+    implementation("androidx.browser:browser:1.7.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.2")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
@@ -46,6 +46,7 @@ dependencies {
     implementation("androidx.navigation:navigation-ui:2.7.5")
     implementation("com.google.android.gms:play-services-maps:18.2.0")
     implementation("com.google.android.libraries.places:places:3.3.0")
+    implementation("com.google.android.material:material:1.10.0")
     implementation("com.google.firebase:firebase-firestore:24.9.1")
     implementation("com.google.maps:google-maps-services:2.2.0")
     implementation("com.squareup.picasso:picasso:2.71828")

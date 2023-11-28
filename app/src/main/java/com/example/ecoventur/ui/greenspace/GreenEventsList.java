@@ -1,14 +1,18 @@
 package com.example.ecoventur.ui.greenspace;
 
+import static com.example.ecoventur.ui.greenspace.approxDistanceBetweenLocation.HaversineFormula;
+
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.maps.model.LatLng;
 
 import java.util.ArrayList;
 
 public class GreenEventsList {
-    private ArrayList<GreenEvent> greenEvents = new ArrayList<GreenEvent>();
+    private final ArrayList<GreenEvent> greenEvents = new ArrayList<>();
     public GreenEventsList() {
         //hardcoded data
         greenEvents.add(new GreenEvent("Tree Planting Day", "10 Nov 2023", "Botanical Garden KL", 50));
@@ -40,7 +44,13 @@ public class GreenEventsList {
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        for (GreenEvent event : task.getResult().toObjects(GreenEvent.class)) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            GreenEvent event = new GreenEvent();
+                            event.setEventId(document.getId());
+                            if (document.contains("name")) event.setName(document.getString("name"));
+                            if (document.contains("date")) event.setDate(document.getString("date"));
+                            if (document.contains("venue")) event.setVenue(document.getString("venue"));
+                            if (document.contains("ecoCoins")) event.setEcoCoins(document.getLong("ecoCoins").intValue());
                             greenEvents.add(event);
                         }
                     } else {
@@ -62,10 +72,13 @@ public class GreenEventsList {
                                             if (eventTask.isSuccessful()) {
                                                 DocumentSnapshot eventSnapshot = eventTask.getResult();
                                                 if (eventSnapshot.exists()) {
-                                                    GreenEvent event = eventSnapshot.toObject(GreenEvent.class);
-                                                    if (event != null){
-                                                        greenEvents.add(event);
-                                                    }
+                                                    GreenEvent event = new GreenEvent();
+                                                    event.setEventId(eventSnapshot.getId());
+                                                    if (eventSnapshot.contains("name")) event.setName(eventSnapshot.getString("name"));
+                                                    if (eventSnapshot.contains("date")) event.setDate(eventSnapshot.getString("date"));
+                                                    if (eventSnapshot.contains("venue")) event.setVenue(eventSnapshot.getString("venue"));
+                                                    if (eventSnapshot.contains("ecoCoins")) event.setEcoCoins(eventSnapshot.getLong("ecoCoins").intValue());
+                                                    greenEvents.add(event);
                                                 }
                                             }
                                         });

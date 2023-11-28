@@ -106,8 +106,7 @@ public class GreenSpaceFragment extends Fragment implements OnMapReadyCallback {
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
 
-//        Places.initialize(getActivity().getApplicationContext(), "@string/API_key");
-
+        //Nearby Green Spaces
         RecyclerView recyclerViewNearbyGreenSpaces = binding.recyclerViewNearbyGreenSpaces;
         nearbyGreenSpaces = new GreenSpacesList().getGreenSpaces();//hardcoded
 //        nearbyGreenSpaces = new GreenSpacesList(requireActivity(),5).getGreenSpaces());//retrieved using google places api based on user's current location
@@ -116,6 +115,7 @@ public class GreenSpaceFragment extends Fragment implements OnMapReadyCallback {
         recyclerViewNearbyGreenSpaces.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
         recyclerViewNearbyGreenSpaces.setAdapter(greenSpacesAdapter);
 
+        //Discover Green Events
         CardView cardViewGreenEventsHeader = root.findViewById(R.id.CVGreenEventHeader);
         RecyclerView recyclerViewDiscoverGreenEvents = binding.recyclerViewDiscoverGreenEvents;
 //        GreenEventsAdapter adapter = new GreenEventsAdapter(new GreenEventsList().getGreenEvents());//hardcoded
@@ -124,6 +124,7 @@ public class GreenSpaceFragment extends Fragment implements OnMapReadyCallback {
         recyclerViewDiscoverGreenEvents.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerViewDiscoverGreenEvents.setAdapter(eventsAdapter);
 
+        //My Events Wishlist
         CardView cardViewEventsWishlistHeader = root.findViewById(R.id.CVEventsWishlistHeader);
         RecyclerView recyclerViewMyEventsWishlist = binding.recyclerViewMyEventsWishlist;
         firestore = FirebaseFirestore.getInstance();

@@ -1,5 +1,6 @@
 package com.example.ecoventur.ui.greenspace;
 
+import static com.example.ecoventur.ui.greenspace.approxDistanceBetweenLocation.HaversineFormula;
 import static com.google.maps.model.PlaceType.PARK;
 
 import android.Manifest;
@@ -34,7 +35,7 @@ public class GreenSpacesList {
     private Location currentLocation;
     private int placesCount = 5;
     private PlacesClient placesClient;
-    private ArrayList<GreenSpace> greenSpaces = new ArrayList<GreenSpace>();
+    private final ArrayList<GreenSpace> greenSpaces = new ArrayList<>();
     private Context context;
     public GreenSpacesList() {
         //hard coded data
@@ -81,7 +82,7 @@ public class GreenSpacesList {
                         for (PlacesSearchResult place: result.results) {
                             LatLng locationLatLng = place.geometry.location;
                             com.google.android.gms.maps.model.LatLng location = new com.google.android.gms.maps.model.LatLng(place.geometry.location.lat, place.geometry.location.lng);
-                            GreenSpace space = new GreenSpace(place.placeId, place.name, getApproxDistance(currentLatLng,locationLatLng), place.rating, location, place.openingHours, place.formattedAddress);
+                            GreenSpace space = new GreenSpace(place.placeId, place.name, HaversineFormula(currentLatLng,locationLatLng), place.rating, location, place.openingHours, place.formattedAddress);
                             greenSpaces.add(space);
                             if (greenSpaces.size() >= placesCount) {
                                 break;
@@ -94,50 +95,8 @@ public class GreenSpacesList {
 
                     }
                 });
-
-//                FindCurrentPlaceRequest request = FindCurrentPlaceRequest.newInstance(Arrays.asList(Place.Field.NAME, Place.Field.LAT_LNG, Place.Field.RATING, Place.Field.PHOTO_METADATAS, Place.Field.TYPES));
-//                placesClient.findCurrentPlace(request).addOnSuccessListener(response -> {
-//                    List<PlaceLikelihood> placeLikelihoods = response.getPlaceLikelihoods();
-//                    for (PlaceLikelihood placeLikelihood : placeLikelihoods) {
-//                        Place place = placeLikelihood.getPlace();
-//                        List<Place.Type> placeTypes = place.getTypes();
-//                        for (Place.Type type: placeTypes) {
-//                            if (type == Place.Type.PARK || type == Place.Type.NATURAL_FEATURE) {
-//                                String placeName = place.getName();
-//                                LatLng placeLatLng = place.getLatLng();
-//                                double placeRating = place.getRating();
-//                                String placeImage = place.getPhotoMetadatas().get(0).getAttributions();
-//                                double approxDistance = getApproxDistance(currentLatLng, placeLatLng);
-//
-//                                GreenSpace space = new GreenSpace(placeImage, placeName, approxDistance, placeRating);
-//                                greenSpaces.add(space);
-//                            }
-//                        }
-//                        if (greenSpaces.size() >= placesCount) {
-//                            break;
-//                        }
-//                    }
-//                });
             }
         });
-    }
-    private double getApproxDistance(LatLng currentLatLng, LatLng placeLatLng) {
-        // https://www.movable-type.co.uk/scripts/latlong.html
-        // Haversine formula
-        double lat1 = currentLatLng.lat;
-        double lon1 = currentLatLng.lng;
-        double lat2 = placeLatLng.lat;
-        double lon2 = placeLatLng.lng;
-        double R = 6371e3; // metres
-        double φ1 = Math.toRadians(lat1);
-        double φ2 = Math.toRadians(lat2);
-        double Δφ = Math.toRadians(lat2-lat1);
-        double Δλ = Math.toRadians(lon2-lon1);
-        double a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
-                Math.cos(φ1) * Math.cos(φ2) *
-                        Math.sin(Δλ/2) * Math.sin(Δλ/2);
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-        return R * c / 1000;
     }
     public ArrayList<GreenSpace> getGreenSpaces() {
         return greenSpaces;

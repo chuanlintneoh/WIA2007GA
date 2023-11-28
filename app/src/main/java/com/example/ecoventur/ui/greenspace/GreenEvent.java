@@ -1,46 +1,101 @@
 package com.example.ecoventur.ui.greenspace;
 
+import static com.example.ecoventur.ui.greenspace.approxDistanceBetweenLocation.HaversineFormula;
+
 import android.media.Image;
 
-public class GreenEvent {
-    private String name;
-    private String date;
-    private String venue;
-    private int ecoCoins;
-    private Image image;
-    private String duration;
-    private double registrationFee;
-    private String venueAddress;
-    private String venueLink;
-    private double approxDistance;
-    private int going;
-    private int interested;
-    private String tncLink;
-    private String detailsLink;
-    private boolean savedToWishlist;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.GeoPoint;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.maps.model.LatLng;
 
-    public GreenEvent() {
-        this.name = "Unspecified Event Name";
-        this.date = "Unspecified Date";
-        this.venue = "Unspecified Event Venue";
-        this.ecoCoins = 0;
-        this.image = null;
-        this.duration = "Unspecified Duration";
-        this.registrationFee = 0.0;
-        this.venueAddress = "Unspecified Venue Address";
-        this.venueLink = "Unspecified Venue Link";
-        this.approxDistance = 0.0;
-        this.going = 0;
-        this.interested = 0;
-        this.tncLink = "Unspecified Terms and Conditions Link";
-        this.detailsLink = "Unspecified Details Link";
-        this.savedToWishlist = false;
+public class GreenEvent {
+    private String eventId = null;
+    private String name = "Unspecified Event Name";
+    private String date = "Unspecified Date";
+    private String venue = "Unspecified Event Venue";
+    private int ecoCoins = -1;
+    private Image image = null;
+    private String duration = "Unspecified Duration";
+    private double registrationFee = -1.0;
+    private String venueAddress = "Unspecified Venue Address";
+    private String venueLink = null;
+    private LatLng venueLatLng = null;
+    private double approxDistance = -1.0;
+    private int going = -1;
+    private int interested = -1;
+    private String tncLink = null;
+    private String detailsLink = null;
+    private boolean savedToWishlist = false;
+
+    public GreenEvent(){
+        // empty constructor required for Firestore (retrieving list of GreenEvents)
     }
     public GreenEvent (String eventName, String date, String venue, int ecoCoins) {
+        // for hard coded data
         this.name = eventName;
         this.date = date;
         this.venue = venue;
         this.ecoCoins = ecoCoins;
+    }
+    public GreenEvent (String eventId, String UID, LatLng currentLatLng) {
+        // for Firestore (retrieving details of specified GreenEvent)
+        this.eventId = eventId;
+        fetchDetailsFromFirestore(UID, currentLatLng);
+    }
+    public void fetchDetailsFromFirestore(String UID, LatLng currentLatLng) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("greenEvents").document(eventId)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.contains("name")) this.setName(document.getString("name"));
+                        if (document.contains("date")) this.setDate(document.getString("date"));
+                        if (document.contains("venue")) this.setVenue(document.getString("venue"));
+                        if (document.contains("ecoCoins")) this.setEcoCoins(document.getLong("ecoCoins").intValue());
+//                        this.setImage(document.getString("image"));
+                        if (document.contains("duration")) this.setDuration(document.getString("duration"));
+                        if (document.contains("registrationFee")) this.setRegistrationFee(document.getDouble("registrationFee"));
+                        if (document.contains("venueAddress")) this.setVenueAddress(document.getString("venueAddress"));
+                        this.setVenueLink(document.getString("venueLink"));
+                        GeoPoint venueGeoPoint = document.getGeoPoint("venueLatLng");
+                        if (venueGeoPoint != null) {
+                            this.setVenueLatLng(new LatLng(venueGeoPoint.getLatitude(), venueGeoPoint.getLongitude()));
+                        }
+                        this.setApproxDistance(HaversineFormula(currentLatLng,venueLatLng));
+                        if (document.contains("going")) this.setGoing(document.getLong("going").intValue());
+                        if (document.contains("interested")) this.setInterested(document.getLong("interested").intValue());
+                        this.setTncLink(document.getString("tncLink"));
+                        this.setDetailsLink(document.getString("detailsLink"));
+                    }
+                    else {
+                        System.out.println("Error getting document: " + task.getException());
+                    }
+                });
+        db.collection("users").document(UID).
+                collection("eventsWishlist")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            String eventPath = "greenEvents/" + eventId;
+                            String eventRef = document.getString("eventId");
+                            if (eventRef != null && eventRef.equals(eventPath)){
+                                this.setSavedToWishlist(true);
+                                break;
+                            }
+                        }
+                    }
+                    else {
+                        savedToWishlist = false;
+                    }
+                });
+    }
+    public String getEventId() {
+        return eventId;
     }
     public String getName() {
         return name;
@@ -69,6 +124,9 @@ public class GreenEvent {
     public String getVenueLink() {
         return venueLink;
     }
+    public LatLng getVenueLatLng() {
+        return venueLatLng;
+    }
     public double getApproxDistance() {
         return approxDistance;
     }
@@ -86,6 +144,9 @@ public class GreenEvent {
     }
     public boolean isSavedToWishlist() {
         return savedToWishlist;
+    }
+    public void setEventId(String eventId) {
+        this.eventId = eventId;
     }
     public void setName(String name) {
         this.name = name;
@@ -113,6 +174,10 @@ public class GreenEvent {
     }
     public void setVenueLink(String venueLink) {
         this.venueLink = venueLink;
+    }
+    public void setVenueLatLng(LatLng venueLatLng) {
+        this.venueLatLng = venueLatLng;
+//        this.venueLatLng = new LatLng(venueLatLng.getLatitude(), venueLatLng.getLongitude());
     }
     public void setApproxDistance(double approxDistance) {
         this.approxDistance = approxDistance;

@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 
 import com.example.ecoventur.R;
@@ -27,6 +28,7 @@ public class GreenEventDetailsActivity extends AppCompatActivity {
     private GreenEvent event = new GreenEvent();
     private ImageView IVEventImage;
     private TextView TVEventName, TVEventEcoCoins, TVEventDate, TVEventDuration, TVEventFee, TVEventVenue, TVEventDistance, TVEventParticipants, TVEventTnC, TVEventDetails;
+    private CardView CVSaveEventToWishlist, CVEventSavedToWishlist;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,14 +75,21 @@ public class GreenEventDetailsActivity extends AppCompatActivity {
         TVEventParticipants = findViewById(R.id.TVEventParticipants);
         TVEventTnC = findViewById(R.id.TVEventTnC);
         TVEventDetails = findViewById(R.id.TVEventDetails);
+        CVSaveEventToWishlist = findViewById(R.id.CVSaveEventToWishlist);
+        CVEventSavedToWishlist = findViewById(R.id.CVEventSavedToWishlist);
     }
     private void assignUIWidgets() {
         //        IVEventImage.setImageResource(event.getImage());
         TVEventName.setText(event.getName());
-        TVEventEcoCoins.setText(String.valueOf(event.getEcoCoins()));
+
+        if (event.getEcoCoins() == -1) TVEventEcoCoins.setText("EcoCoins Unspecified");
+        else TVEventEcoCoins.setText(String.valueOf(event.getEcoCoins()));
+
         TVEventDate.setText(event.getDate());
         TVEventDuration.setText(event.getDuration());
+
         if (event.getRegistrationFee() == 0.0) TVEventFee.setText("FREE");
+        else if (event.getRegistrationFee() == -1.0) TVEventFee.setText("Registration Fee Unspecified");
         else TVEventFee.setText(String.valueOf(event.getRegistrationFee()));
 
         if (event.getVenueLink() != null){
@@ -93,8 +102,26 @@ public class GreenEventDetailsActivity extends AppCompatActivity {
             TVEventVenue.setText(event.getVenue() + "\n" + event.getVenueAddress());
         }
 
-        TVEventDistance.setText(String.format("Approximately %.1fkm from current location", event.getApproxDistance()));
-        TVEventParticipants.setText(String.format("%d going, %d interested", event.getGoing(), event.getInterested()));
+        if (event.getApproxDistance() != -1.0){
+            TVEventDistance.setText(String.format("Approximately %.1fkm from current location", event.getApproxDistance()));
+        }
+        else {
+            TVEventDistance.setText("Distance from current location not available");
+        }
+
+        int going = event.getGoing();
+        int interested = event.getInterested();
+        if (going == -1 && interested == -1){
+            TVEventParticipants.setText("Participants not available");
+        }
+        else if (going == -1 || interested == -1){
+            if (going == -1) going = 0;
+            if (interested == -1) interested = 0;
+            TVEventParticipants.setText(String.format("%d going, %d interested", going, interested));
+        }
+        else {
+            TVEventParticipants.setText(String.format("%d going, %d interested", going, interested));
+        }
 
         if (event.getTncLink() != null){
             SpannableString spannableTnC = customTabLauncher.makeTextSpannable("View terms & conditions", event.getTncLink());
@@ -114,6 +141,15 @@ public class GreenEventDetailsActivity extends AppCompatActivity {
         }
         else {
             TVEventDetails.setText("Details not available");
+        }
+
+        if (!event.isSavedToWishlist()){
+            CVSaveEventToWishlist.setVisibility(View.VISIBLE);
+            CVEventSavedToWishlist.setVisibility(View.GONE);
+        }
+        else {
+            CVSaveEventToWishlist.setVisibility(View.GONE);
+            CVEventSavedToWishlist.setVisibility(View.VISIBLE);
         }
     }
 }

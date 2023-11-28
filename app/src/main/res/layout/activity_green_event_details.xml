@@ -168,7 +168,7 @@
                 </LinearLayout>
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
+                    android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:paddingHorizontal="20dp"
                     android:paddingVertical="10dp">
@@ -183,7 +183,7 @@
                     <TextView
                         android:id="@+id/TVEventDistance"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:gravity="center_vertical"
                         android:fontFamily="@font/alata"
                         android:text="Approximately x.ykm from current location"/>

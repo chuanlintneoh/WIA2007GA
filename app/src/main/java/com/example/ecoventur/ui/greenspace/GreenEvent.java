@@ -86,16 +86,24 @@ public class GreenEvent {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful() && task.getResult() != null) {
                         for (QueryDocumentSnapshot document : task.getResult()) {
-                            String eventPath = "greenEvents/" + eventId;
-                            String eventRef = String.valueOf(document.getDocumentReference("eventId"));
-                            if (eventRef.equals(eventPath)){
-                                this.setSavedToWishlist(true);
-                                break;
+                            DocumentReference eventRef = document.getDocumentReference("eventId");
+                            if (eventRef != null) {
+                                eventRef.get()
+                                        .addOnCompleteListener(eventTask -> {
+                                            if (eventTask.isSuccessful()) {
+                                                String eventRefId = eventTask.getResult().getId();
+                                                if (eventRefId.equals(eventId)) {
+                                                    this.setSavedToWishlist(true);
+                                                    listener.onDataLoaded(this);
+                                                }
+                                            }
+                                        });
                             }
                         }
                     }
                     else {
                         savedToWishlist = false;
+                        listener.onDataLoaded(this);
                     }
                 });
     }

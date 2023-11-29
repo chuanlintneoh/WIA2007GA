@@ -91,7 +91,7 @@ public class GreenEventDetailsActivity extends AppCompatActivity {
 
         if (event.getRegistrationFee() == 0.0) TVEventFee.setText("FREE");
         else if (event.getRegistrationFee() == -1.0) TVEventFee.setText("Registration Fee Unspecified");
-        else TVEventFee.setText(String.valueOf(event.getRegistrationFee()));
+        else TVEventFee.setText(String.format("RM %.2f", event.getRegistrationFee()));
 
         if (event.getVenueLink() != null){
             SpannableString spannableVenue = customTabLauncher.makeTextSpannable(event.getVenue() + "\n" + event.getVenueAddress(),event.getVenueLink());

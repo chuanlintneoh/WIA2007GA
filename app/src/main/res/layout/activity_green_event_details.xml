@@ -104,6 +104,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:layout_gravity="center_vertical"
                         android:gravity="center_vertical"
                         android:fontFamily="@font/alata"
                         android:text="Event Date"/>
@@ -118,8 +119,9 @@
                     <TextView
                         android:id="@+id/TVEventDuration"
                         android:layout_width="0dp"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:layout_gravity="center_vertical"
                         android:gravity="center_vertical"
                         android:fontFamily="@font/alata"
                         android:text="Event Duration"/>
@@ -289,7 +291,7 @@
                             android:layout_gravity="center"
                             android:adjustViewBounds="true"
                             android:scaleType="fitCenter"
-                            app:srcCompat="@drawable/share"/>
+                            app:srcCompat="@android:drawable/ic_menu_share" />
                     </androidx.cardview.widget.CardView>
                 </LinearLayout>
             </LinearLayout>

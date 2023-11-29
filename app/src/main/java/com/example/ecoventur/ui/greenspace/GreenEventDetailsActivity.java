@@ -28,7 +28,7 @@ public class GreenEventDetailsActivity extends AppCompatActivity {
     private GreenEvent event = new GreenEvent();
     private ImageView IVEventImage;
     private TextView TVEventName, TVEventEcoCoins, TVEventDate, TVEventDuration, TVEventFee, TVEventVenue, TVEventDistance, TVEventParticipants, TVEventTnC, TVEventDetails;
-    private CardView CVSaveEventToWishlist, CVEventSavedToWishlist;
+    private CardView CVSaveEventToWishlist, CVEventSavedToWishlist, CVShare;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,6 +77,7 @@ public class GreenEventDetailsActivity extends AppCompatActivity {
         TVEventDetails = findViewById(R.id.TVEventDetails);
         CVSaveEventToWishlist = findViewById(R.id.CVSaveEventToWishlist);
         CVEventSavedToWishlist = findViewById(R.id.CVEventSavedToWishlist);
+        CVShare = findViewById(R.id.CVShare);
     }
     private void assignUIWidgets() {
         //        IVEventImage.setImageResource(event.getImage());
@@ -151,5 +152,21 @@ public class GreenEventDetailsActivity extends AppCompatActivity {
             CVSaveEventToWishlist.setVisibility(View.GONE);
             CVEventSavedToWishlist.setVisibility(View.VISIBLE);
         }
+
+        CVShare.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                String shareBody =
+                        String.format("\uD83C\uDF3F Join me at the Green Event '%s' on %s! Earn EcoCoins, explore sustainability practices, and connect like-minded individuals.\n" +
+                                "Venue: %s\n%s\n" +
+                                "Download EcoVentur now to find out more!\n%s",
+                                event.getName(), event.getDate(), event.getVenue(), (event.getVenueLink() == null? "" : event.getVenueLink()), "https://play.google.com/store/apps/details?id=com.example.ecoventur");
+                shareIntent.setType("text/plain");
+                shareIntent.putExtra(Intent.EXTRA_SUBJECT, "EcoVentur");
+                shareIntent.putExtra(Intent.EXTRA_TEXT, shareBody);
+                startActivity(Intent.createChooser(shareIntent, "Share via"));
+            }
+        });
     }
 }

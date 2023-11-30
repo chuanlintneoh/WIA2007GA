@@ -86,7 +86,13 @@ public class GreenEventDetailsActivity extends AppCompatActivity {
         CVShare = findViewById(R.id.CVShare);
     }
     private void assignUIWidgets() {
-        //        IVEventImage.setImageResource(event.getImage());
+        if (event.getImage() == null) {
+            IVEventImage.setImageResource(R.drawable.camping_field);
+        }
+//        else {
+//            IVEventImage.setImageResource(event.getImage());
+//        }
+
         TVEventName.setText(event.getName());
 
         if (event.getEcoCoins() == -1) TVEventEcoCoins.setText("EcoCoins Unspecified");

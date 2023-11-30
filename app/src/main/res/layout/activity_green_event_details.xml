@@ -30,7 +30,7 @@
             android:id="@+id/IVEventImage"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            tools:src="@tools:sample/avatars"
+            tools:src="@drawable/event_card"
             android:layout_gravity="center"
             android:scaleType="fitCenter"
             android:adjustViewBounds="true"/>

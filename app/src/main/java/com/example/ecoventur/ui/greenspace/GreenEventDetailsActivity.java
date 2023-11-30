@@ -161,13 +161,33 @@ public class GreenEventDetailsActivity extends AppCompatActivity {
         CVSaveEventToWishlist.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                saveToWishlist();
+                saveToWishlist(new FirestoreCallback() {
+                    @Override
+                    public void onDataLoaded(Object object) {
+                        CVSaveEventToWishlist.setVisibility(View.GONE);
+                        CVEventSavedToWishlist.setVisibility(View.VISIBLE);
+                    }
+                    @Override
+                    public void onFailure(Exception e) {
+                        System.out.println("Error adding document to wishlist: " + e);
+                    }
+                });
             }
         });
         CVEventSavedToWishlist.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                removeFromWishlist();
+                removeFromWishlist(new FirestoreCallback() {
+                    @Override
+                    public void onDataLoaded(Object object) {
+                        CVSaveEventToWishlist.setVisibility(View.VISIBLE);
+                        CVEventSavedToWishlist.setVisibility(View.GONE);
+                    }
+                    @Override
+                    public void onFailure(Exception e) {
+                        System.out.println("Error deleting document from wishlist: " + e);
+                    }
+                });
             }
         });
 
@@ -187,7 +207,7 @@ public class GreenEventDetailsActivity extends AppCompatActivity {
             }
         });
     }
-    private void saveToWishlist() {
+    private void saveToWishlist(FirestoreCallback callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference eventRef = db.document("greenEvents/" + eventId);
 
@@ -199,14 +219,11 @@ public class GreenEventDetailsActivity extends AppCompatActivity {
                 .add(wishlistEvent)
                 .addOnSuccessListener(documentReference -> {
                     event.setSavedToWishlist(true);
-                    CVSaveEventToWishlist.setVisibility(View.GONE);
-                    CVEventSavedToWishlist.setVisibility(View.VISIBLE);
+                    callback.onDataLoaded(event);
                 })
-                .addOnFailureListener(e -> {
-                    System.out.println("Error adding document to wishlist: " + e);
-                });
+                .addOnFailureListener(callback::onFailure);
     }
-    private void removeFromWishlist() {
+    private void removeFromWishlist(FirestoreCallback callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("users").document(UID)
                 .collection("eventsWishlist")
@@ -216,16 +233,13 @@ public class GreenEventDetailsActivity extends AppCompatActivity {
                         DocumentReference eventRef = document.getDocumentReference("eventId");
                         if (eventRef != null){
                             String eventRefPath = eventRef.getPath();
-                            if (eventRefPath.equals("/greenEvents/" + eventId)) {
+                            if (eventRefPath.equals("greenEvents/" + eventId)) {
                                 document.getReference().delete()
                                         .addOnSuccessListener(aVoid -> {
                                             event.setSavedToWishlist(false);
-                                            CVSaveEventToWishlist.setVisibility(View.VISIBLE);
-                                            CVEventSavedToWishlist.setVisibility(View.GONE);
+                                            callback.onDataLoaded(event);
                                         })
-                                        .addOnFailureListener(e -> {
-                                            System.out.println("Error deleting document from wishlist: " + e);
-                                        });
+                                        .addOnFailureListener(callback::onFailure);
                                 break; // found the document to delete, so break out of the loop
                             }
                         }

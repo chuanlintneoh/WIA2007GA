@@ -78,28 +78,36 @@ public class GreenEventsList {
     private void retrieveUserWishlist(FirebaseFirestore db, String UID, FirestoreCallback callback) {
         //retrieve user's wishlist from firestore
         //first retrieve all upcoming green events from firestore then filter out the ones in user's wishlist
-        retrieveFirestoreData(db, callback);
-        List<String> eventIds = new ArrayList<>();
-        db.collection("users").document(UID).collection("eventsWishlist")
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        for (QueryDocumentSnapshot document: task.getResult()) {
-                            String eventId = document.getDocumentReference("eventId").getId();
-                            eventIds.add(eventId);
-                        }
-                        ArrayList<GreenEvent> filteredEvents = new ArrayList<>();
-                        for (GreenEvent event: greenEvents) {
-                            if (eventIds.contains(event.getEventId())) {
-                                filteredEvents.add(event);
+        retrieveFirestoreData(db, new FirestoreCallback() {
+            @Override
+            public void onDataLoaded(Object object) {
+                List<String> eventIds = new ArrayList<>();
+                db.collection("users").document(UID).collection("eventsWishlist")
+                        .get()
+                        .addOnCompleteListener(task -> {
+                            if (task.isSuccessful()) {
+                                for (QueryDocumentSnapshot document: task.getResult()) {
+                                    String eventId = document.getDocumentReference("eventId").getId();
+                                    eventIds.add(eventId);
+                                }
+                                ArrayList<GreenEvent> filteredEvents = new ArrayList<>();
+                                for (GreenEvent event: greenEvents) {
+                                    if (eventIds.contains(event.getEventId())) {
+                                        filteredEvents.add(event);
+                                    }
+                                }
+                                callback.onDataLoaded(filteredEvents);
                             }
-                        }
-                        callback.onDataLoaded(filteredEvents);
-                    }
-                    else {
-                        callback.onFailure(task.getException());
-                    }
-                });
+                            else {
+                                callback.onFailure(task.getException());
+                            }
+                        });
+            }
+            @Override
+            public void onFailure(Exception e) {
+                System.out.println("Error retrieving green events: " + e);
+            }
+        });
     }
     public ArrayList<GreenEvent> getGreenEvents() {
         return greenEvents;

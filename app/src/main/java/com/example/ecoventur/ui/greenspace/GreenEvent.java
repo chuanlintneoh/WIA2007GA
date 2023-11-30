@@ -11,6 +11,10 @@ import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.maps.model.LatLng;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
+
 public class GreenEvent {
     private String eventId = null;
     private String name = "Unspecified Event Name";
@@ -40,16 +44,12 @@ public class GreenEvent {
         this.venue = venue;
         this.ecoCoins = ecoCoins;
     }
-    public GreenEvent (String eventId, String UID, LatLng currentLatLng, FirestoreDataListener listener) {
+    public GreenEvent (String eventId, String UID, LatLng currentLatLng, FirestoreCallback callback) {
         // for Firestore (retrieving details of specified GreenEvent)
         this.eventId = eventId;
-        fetchDetailsFromFirestore(UID, currentLatLng, listener);
+        fetchDetailsFromFirestore(UID, currentLatLng, callback);
     }
-    public interface FirestoreDataListener {
-        void onDataLoaded(GreenEvent event);
-        void onFailure(Exception e);
-    }
-    public void fetchDetailsFromFirestore(String UID, LatLng currentLatLng, FirestoreDataListener listener) {
+    public void fetchDetailsFromFirestore(String UID, LatLng currentLatLng, FirestoreCallback callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("greenEvents").document(eventId)
                 .get()
@@ -57,7 +57,11 @@ public class GreenEvent {
                     if (task.isSuccessful() && task.getResult() != null) {
                         DocumentSnapshot document = task.getResult();
                         if (document.contains("name")) this.setName(document.getString("name"));
-                        if (document.contains("date")) this.setDate(document.getString("date"));
+                        if (document.contains("date")) {
+                            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+                            formatter.setTimeZone(TimeZone.getTimeZone("Asia/Kuala_Lumpur"));
+                            this.setDate(formatter.format(document.getTimestamp("date").toDate()));
+                        }
                         if (document.contains("venue")) this.setVenue(document.getString("venue"));
                         if (document.contains("ecoCoins")) this.setEcoCoins(document.getLong("ecoCoins").intValue());
 //                        this.setImage(document.getString("image"));
@@ -74,10 +78,10 @@ public class GreenEvent {
                         if (document.contains("interested")) this.setInterested(document.getLong("interested").intValue());
                         this.setTncLink(document.getString("tncLink"));
                         this.setDetailsLink(document.getString("detailsLink"));
-                        listener.onDataLoaded(this);
+                        callback.onDataLoaded(this);
                     }
                     else {
-                        listener.onFailure(new Exception("Document does not exist."));
+                        callback.onFailure(new Exception("Document does not exist."));
                     }
                 });
         db.collection("users").document(UID).
@@ -94,7 +98,7 @@ public class GreenEvent {
                                                 String eventRefId = eventTask.getResult().getId();
                                                 if (eventRefId.equals(eventId)) {
                                                     this.setSavedToWishlist(true);
-                                                    listener.onDataLoaded(this);
+                                                    callback.onDataLoaded(this);
                                                 }
                                             }
                                         });
@@ -103,7 +107,7 @@ public class GreenEvent {
                     }
                     else {
                         savedToWishlist = false;
-                        listener.onDataLoaded(this);
+                        callback.onDataLoaded(this);
                     }
                 });
     }
@@ -190,7 +194,6 @@ public class GreenEvent {
     }
     public void setVenueLatLng(LatLng venueLatLng) {
         this.venueLatLng = venueLatLng;
-//        this.venueLatLng = new LatLng(venueLatLng.getLatitude(), venueLatLng.getLongitude());
     }
     public void setApproxDistance(double approxDistance) {
         this.approxDistance = approxDistance;

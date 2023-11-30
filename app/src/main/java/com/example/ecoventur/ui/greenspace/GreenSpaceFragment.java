@@ -120,17 +120,35 @@ public class GreenSpaceFragment extends Fragment implements OnMapReadyCallback {
         RecyclerView recyclerViewDiscoverGreenEvents = binding.recyclerViewDiscoverGreenEvents;
 //        GreenEventsAdapter adapter = new GreenEventsAdapter(new GreenEventsList().getGreenEvents());//hardcoded
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-        GreenEventsAdapter eventsAdapter = new GreenEventsAdapter(new GreenEventsList(firestore).getGreenEvents());//firestore
-        recyclerViewDiscoverGreenEvents.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerViewDiscoverGreenEvents.setAdapter(eventsAdapter);
+        new GreenEventsList(firestore, new FirestoreCallback() {
+            @Override
+            public void onDataLoaded(Object object) {
+                GreenEventsAdapter eventsAdapter = new GreenEventsAdapter((ArrayList<GreenEvent>) object);
+                recyclerViewDiscoverGreenEvents.setLayoutManager(new LinearLayoutManager(getActivity()));
+                recyclerViewDiscoverGreenEvents.setAdapter(eventsAdapter);
+            }
+            @Override
+            public void onFailure(Exception e) {
+                System.out.println("Error retrieving green events: " + e);
+            }
+        });//firestore
 
         //My Events Wishlist
         CardView cardViewEventsWishlistHeader = root.findViewById(R.id.CVEventsWishlistHeader);
         RecyclerView recyclerViewMyEventsWishlist = binding.recyclerViewMyEventsWishlist;
         firestore = FirebaseFirestore.getInstance();
-        GreenEventsAdapter wishlistAdapter = new GreenEventsAdapter(new GreenEventsList(firestore, UID).getGreenEvents());//user's saved green events wishlist
-        recyclerViewMyEventsWishlist.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerViewMyEventsWishlist.setAdapter(wishlistAdapter);
+        new GreenEventsList(firestore, UID, new FirestoreCallback() {
+            @Override
+            public void onDataLoaded(Object object) {
+                GreenEventsAdapter wishlistAdapter = new GreenEventsAdapter((ArrayList<GreenEvent>) object);
+                recyclerViewMyEventsWishlist.setLayoutManager(new LinearLayoutManager(getActivity()));
+                recyclerViewMyEventsWishlist.setAdapter(wishlistAdapter);
+            }
+            @Override
+            public void onFailure(Exception e) {
+                System.out.println("Error retrieving user's wishlist: " + e);
+            }
+        });
 
         Button buttonNearbyGreenSpaces = root.findViewById(R.id.ToggleNearbyGreenSpaces);
         buttonNearbyGreenSpaces.setOnClickListener(view -> toggleVisibility(recyclerViewNearbyGreenSpaces));

@@ -20,7 +20,13 @@ import androidx.core.app.ActivityCompat;
 import com.example.ecoventur.R;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.maps.model.LatLng;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class GreenEventDetailsActivity extends AppCompatActivity {
     private String eventId;
@@ -49,15 +55,15 @@ public class GreenEventDetailsActivity extends AppCompatActivity {
                     currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
                 }
                 initializeWidgets();
-                this.event = new GreenEvent(eventId, UID, currentLatLng, new GreenEvent.FirestoreDataListener() {
+                this.event = new GreenEvent(eventId, UID, currentLatLng, new FirestoreCallback() {
                     @Override
-                    public void onDataLoaded(GreenEvent event) {
+                    public void onDataLoaded(Object object) {
                         assignUIWidgets();
                     }
 
                     @Override
                     public void onFailure(Exception e) {
-
+                        System.out.println("Error retrieving event details: " + e);
                     }
                 });
             });
@@ -152,6 +158,18 @@ public class GreenEventDetailsActivity extends AppCompatActivity {
             CVSaveEventToWishlist.setVisibility(View.GONE);
             CVEventSavedToWishlist.setVisibility(View.VISIBLE);
         }
+        CVSaveEventToWishlist.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                saveToWishlist();
+            }
+        });
+        CVEventSavedToWishlist.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                removeFromWishlist();
+            }
+        });
 
         CVShare.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -168,5 +186,53 @@ public class GreenEventDetailsActivity extends AppCompatActivity {
                 startActivity(Intent.createChooser(shareIntent, "Share via"));
             }
         });
+    }
+    private void saveToWishlist() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference eventRef = db.document("greenEvents/" + eventId);
+
+        Map<String, Object> wishlistEvent = new HashMap<>();
+        wishlistEvent.put("eventId", eventRef);
+
+        db.collection("users").document(UID)
+                .collection("eventsWishlist")
+                .add(wishlistEvent)
+                .addOnSuccessListener(documentReference -> {
+                    event.setSavedToWishlist(true);
+                    CVSaveEventToWishlist.setVisibility(View.GONE);
+                    CVEventSavedToWishlist.setVisibility(View.VISIBLE);
+                })
+                .addOnFailureListener(e -> {
+                    System.out.println("Error adding document to wishlist: " + e);
+                });
+    }
+    private void removeFromWishlist() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("users").document(UID)
+                .collection("eventsWishlist")
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    for (QueryDocumentSnapshot document: queryDocumentSnapshots) {
+                        DocumentReference eventRef = document.getDocumentReference("eventId");
+                        if (eventRef != null){
+                            String eventRefPath = eventRef.getPath();
+                            if (eventRefPath.equals("/greenEvents/" + eventId)) {
+                                document.getReference().delete()
+                                        .addOnSuccessListener(aVoid -> {
+                                            event.setSavedToWishlist(false);
+                                            CVSaveEventToWishlist.setVisibility(View.VISIBLE);
+                                            CVEventSavedToWishlist.setVisibility(View.GONE);
+                                        })
+                                        .addOnFailureListener(e -> {
+                                            System.out.println("Error deleting document from wishlist: " + e);
+                                        });
+                                break; // found the document to delete, so break out of the loop
+                            }
+                        }
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    System.out.println("Error getting documents: " + e);
+                });
     }
 }

@@ -38,6 +38,12 @@
         <activity
             android:name=".ui.greenspace.GreenEventDetailsActivity"
             android:label="Green Event Details"/>
+        <activity
+            android:name=".ui.greenspace.GreenSpaceDetailsActivity"
+            android:label="Green Space Details"/>
+        <activity
+            android:name=".ui.greenspace.GreenSpaceReviewsActivity"
+            android:label="Green Space Reviews"/>
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/API_key" />

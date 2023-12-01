@@ -26,6 +26,7 @@ import com.google.android.gms.maps.model.LatLng;
 
 public class GreenSpaceDetailsActivity extends AppCompatActivity implements OnMapReadyCallback {
     private GreenSpace space;
+    private Bundle savedInstanceState;
     private MapView MVSpaceLocation;
     private GoogleMap googleMap;
     private TextView TVSpaceName, TVSpaceOpeningHours, TVSpaceAddress, TVSpaceDistance, TVSpaceFee, TVSpaceLink;
@@ -35,27 +36,30 @@ public class GreenSpaceDetailsActivity extends AppCompatActivity implements OnMa
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_greenspace_details);
+        this.savedInstanceState = savedInstanceState;
 
         Intent intent = getIntent();
         if (intent != null) {
-            String greenSpaceId = intent.getStringExtra("greenSpaceId");
+//            this.space = intent.getStringExtra("placeId");
+            initializeWidgets();
+            assignUIWidgets();
         }
     }
     @Override
     public void onMapReady(@NonNull GoogleMap map) {
         this.googleMap = map;
-//        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//            ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
-//            if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//                Toast.makeText(getContext(), "Location permission not granted", Toast.LENGTH_SHORT).show();
-//                return;
-//            }
-//        }
-//        googleMap.setMyLocationEnabled(true);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "Location permission not granted", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }
+        googleMap.setMyLocationEnabled(true);
         googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
         // move camera to location of green space
-//        LatLng location = ;
-//        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 15));
+        LatLng location = space.getLocation();
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 15));
         googleMap.getUiSettings().setZoomControlsEnabled(true);
     }
     private void initializeWidgets() {
@@ -71,7 +75,8 @@ public class GreenSpaceDetailsActivity extends AppCompatActivity implements OnMa
         CVShare = findViewById(R.id.CVShare);
     }
     private void assignUIWidgets() {
-//        MVSpaceLocation
+        MVSpaceLocation.onCreate(savedInstanceState);
+        MVSpaceLocation.getMapAsync(this);
         TVSpaceName.setText(space.getName());
         TVSpaceOpeningHours.setText(space.getOpeningHours());
         TVSpaceAddress.setText(space.getAddress());

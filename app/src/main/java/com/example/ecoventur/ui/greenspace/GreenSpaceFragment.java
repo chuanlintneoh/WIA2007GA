@@ -108,12 +108,32 @@ public class GreenSpaceFragment extends Fragment implements OnMapReadyCallback {
 
         //Nearby Green Spaces
         RecyclerView recyclerViewNearbyGreenSpaces = binding.recyclerViewNearbyGreenSpaces;
-        nearbyGreenSpaces = new GreenSpacesList().getGreenSpaces();//hardcoded
+//        nearbyGreenSpaces = new GreenSpacesList().getGreenSpaces();//hardcoded
 //        nearbyGreenSpaces = new GreenSpacesList(requireActivity(),5).getGreenSpaces());//retrieved using google places api based on user's current location
-        System.out.println("No. of nearby places: " + nearbyGreenSpaces.size());
-        GreenSpacesAdapter greenSpacesAdapter = new GreenSpacesAdapter(nearbyGreenSpaces);
-        recyclerViewNearbyGreenSpaces.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
-        recyclerViewNearbyGreenSpaces.setAdapter(greenSpacesAdapter);
+        FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext());
+        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+        }
+        fusedLocationProviderClient.getLastLocation().addOnSuccessListener(location -> {
+            com.google.maps.model.LatLng currentLatLng;
+            if (location != null) {
+                currentLatLng = new com.google.maps.model.LatLng(location.getLatitude(), location.getLongitude());
+                FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+                new GreenSpacesList(firestore, currentLatLng, new FirestoreCallback() {
+                    @Override
+                    public void onDataLoaded(Object object) {
+                        GreenSpacesAdapter greenSpacesAdapter = new GreenSpacesAdapter((ArrayList<GreenSpace>) object);
+                        recyclerViewNearbyGreenSpaces.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+                        recyclerViewNearbyGreenSpaces.setAdapter(greenSpacesAdapter);
+                    }
+                    @Override
+                    public void onFailure(Exception e) {
+                        System.out.println("Error retrieving nearby green spaces: " + e);
+                    }
+                });
+            }
+        });
+
 
         //Discover Green Events
         CardView cardViewGreenEventsHeader = root.findViewById(R.id.CVGreenEventHeader);

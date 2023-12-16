@@ -58,7 +58,7 @@ public class GreenSpaceDetailsActivity extends AppCompatActivity implements OnMa
         googleMap.setMyLocationEnabled(true);
         googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
         // move camera to location of green space
-        LatLng location = space.getLocation();
+        LatLng location = space.getMapsLatLng();
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 15));
         googleMap.getUiSettings().setZoomControlsEnabled(true);
     }

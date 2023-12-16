@@ -19,6 +19,9 @@ import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.model.PlaceLikelihood;
 import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.GeoPoint;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.maps.GeoApiContext;
 import com.google.maps.model.LatLng;
 import com.google.maps.NearbySearchRequest;
@@ -29,6 +32,8 @@ import com.google.maps.model.PlacesSearchResult;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class GreenSpacesList {
@@ -39,62 +44,103 @@ public class GreenSpacesList {
     private Context context;
     public GreenSpacesList() {
         //hard coded data
-        greenSpaces.add(new GreenSpace("https://www.google.com/maps/place/Taman+Desa+Playground%2FPark/@3.0823331,101.6580819,3a,75y,90t/data=!3m8!1e2!3m6!1sAF1QipMOGt0vcEoxoEmzUdOl-C8PtwRT3nF0GQdvwadm!2e10!3e12!6shttps:%2F%2Flh5.googleusercontent.com%2Fp%2FAF1QipMOGt0vcEoxoEmzUdOl-C8PtwRT3nF0GQdvwadm%3Dw114-h86-k-no!7i4096!8i3072!4m7!3m6!1s0x31cc4bad9b619d1d:0xbb96f055002c0220!8m2!3d3.1011069!4d101.6829714!10e5!16s%2Fg%2F11fcsrw6h6?entry=ttu#", "Taman Desa Playground", 0.5, 4.3));
-        greenSpaces.add(new GreenSpace("https://www.google.com/maps/place/Lake+Garden+@+Bangsar+South/@3.1117648,101.6665649,3a,75y,90t/data=!3m8!1e2!3m6!1sAF1QipOyhlYncOBnfxSPgfjUYeHFReo5zOFTt-10Vjfq!2e10!3e12!6shttps:%2F%2Flh5.googleusercontent.com%2Fp%2FAF1QipOyhlYncOBnfxSPgfjUYeHFReo5zOFTt-10Vjfq%3Dw114-h86-k-no!7i4032!8i3024!4m7!3m6!1s0x31cc4a2a09bf3e0f:0x6c104c7703f1f088!8m2!3d3.1117648!4d101.6665649!10e5!16s%2Fg%2F11f124l8x0?entry=ttu#", "Lake Garden @ Bangsar South", 1.3, 4.4));
-        GreenSpace space = new GreenSpace("https://www.google.com/maps/place/KLCC+Park/@3.1545313,101.7151839,3a,75y,90t/data=!3m8!1e2!3m6!1sAF1QipMz6XvewUo1gPa19Tk8FhG_YUvmqzhAb8Xf89QV!2e10!3e12!6shttps:%2F%2Flh5.googleusercontent.com%2Fp%2FAF1QipMz6XvewUo1gPa19Tk8FhG_YUvmqzhAb8Xf89QV%3Dw114-h86-k-no!7i4032!8i3024!4m7!3m6!1s0x31cc37d3dae66605:0xced2781fa7347a4e!8m2!3d3.1545313!4d101.7151839!10e5!16s%2Fm%2F05mr431?entry=ttu#", "KLCC Park", 2.7, 4.6);
+        greenSpaces.add(new GreenSpace("Taman Desa Playground", 0.5, 4.3));
+        greenSpaces.add(new GreenSpace("Lake Garden @ Bangsar South", 1.3, 4.4));
+        GreenSpace space = new GreenSpace("KLCC Park", 2.7, 4.6);
         space.setOpeningHours("10 am - 10 pm (Wednesday)");
         space.setAddress("KLCC, Lot No. 241, Level 2, Suria, Kuala Lumpur City Centre, 50088 Kuala Lumpur");
         space.setAdmissionFee(0.00);
         space.setMapsURL("https://maps.app.goo.gl/e9KBcMLR2dGc3PJV7");
         greenSpaces.add(space);
     }
-    public GreenSpacesList(Context context, int placesCount) {
-        this.context = context;
-        this.placesCount = placesCount;
-        Places.initialize(context, "@string/API_key");
-        placesClient = Places.createClient(context);
-        fetchNearbyGreenSpaces();
+//    public GreenSpacesList(Context context, int placesCount) {
+//        //fetch api
+//        this.context = context;
+//        this.placesCount = placesCount;
+//        Places.initialize(context, "@string/API_key");
+//        placesClient = Places.createClient(context);
+//        fetchNearbyGreenSpaces();
+//    }
+    public GreenSpacesList(FirebaseFirestore db, LatLng currentLatLng, FirestoreCallback callback) {
+        //fetch firestore hardcoded data
+        retrieveFirestoreData(db, currentLatLng, callback);
     }
-    private void fetchNearbyGreenSpaces() {
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                return;
-            }
-        }
-        FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context);
-        fusedLocationProviderClient.getLastLocation().addOnSuccessListener(location -> {
-            if (location != null) {
-                this.currentLocation = location;
-                LatLng currentLatLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
-
-                GeoApiContext geoApiContext = new GeoApiContext.Builder()
-                        .apiKey("@string/API_key")
-                        .build();
-
-                NearbySearchRequest request = PlacesApi.nearbySearchQuery(geoApiContext, currentLatLng);
-                request.radius(5000);
-                request.type(PARK);
-
-                request.setCallback(new PendingResult.Callback<PlacesSearchResponse>() {
-                    @Override
-                    public void onResult(PlacesSearchResponse result) {
-                        for (PlacesSearchResult place: result.results) {
-                            LatLng locationLatLng = place.geometry.location;
-                            com.google.android.gms.maps.model.LatLng location = new com.google.android.gms.maps.model.LatLng(place.geometry.location.lat, place.geometry.location.lng);
-                            GreenSpace space = new GreenSpace(place.placeId, place.name, HaversineFormula(currentLatLng,locationLatLng), place.rating, location, place.openingHours, place.formattedAddress);
-                            greenSpaces.add(space);
-                            if (greenSpaces.size() >= placesCount) {
-                                break;
+//    private void fetchNearbyGreenSpaces() {
+//        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//            ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+//            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//                return;
+//            }
+//        }
+//        FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context);
+//        fusedLocationProviderClient.getLastLocation().addOnSuccessListener(location -> {
+//            if (location != null) {
+//                this.currentLocation = location;
+//                LatLng currentLatLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+//
+//                GeoApiContext geoApiContext = new GeoApiContext.Builder()
+//                        .apiKey("@string/API_key")
+//                        .build();
+//
+//                NearbySearchRequest request = PlacesApi.nearbySearchQuery(geoApiContext, currentLatLng);
+//                request.radius(5000);
+//                request.type(PARK);
+//
+//                request.setCallback(new PendingResult.Callback<PlacesSearchResponse>() {
+//                    @Override
+//                    public void onResult(PlacesSearchResponse result) {
+//                        for (PlacesSearchResult place: result.results) {
+//                            LatLng locationLatLng = place.geometry.location;
+//                            com.google.android.gms.maps.model.LatLng location = new com.google.android.gms.maps.model.LatLng(place.geometry.location.lat, place.geometry.location.lng);
+//                            GreenSpace space = new GreenSpace(place.placeId, place.name, HaversineFormula(currentLatLng,locationLatLng), place.rating, location, place.openingHours, place.formattedAddress);
+//                            greenSpaces.add(space);
+//                            if (greenSpaces.size() >= placesCount) {
+//                                break;
+//                            }
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onFailure(Throwable e) {
+//
+//                    }
+//                });
+//            }
+//        });
+//    }
+    private void retrieveFirestoreData(FirebaseFirestore db, LatLng currentLatLng, FirestoreCallback callback) {
+        db.collection("greenSpaces")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document: task.getResult()) {
+                            GreenSpace space = new GreenSpace();
+                            space.setPlaceId(document.getId());
+                            if (document.contains("name")) space.setName(document.getString("name"));
+                            GeoPoint geoPoint = document.getGeoPoint("latLng");
+                            if (geoPoint != null){
+                                space.setLocation(new LatLng(geoPoint.getLatitude(), geoPoint.getLongitude()));
                             }
+                            space.setApproxDistance(HaversineFormula(currentLatLng, space.getLocation()));
+                            if (document.contains("openingHours")) space.setOpeningHours(document.getString("openingHours"));
+                            if (document.contains("address")) space.setAddress(document.getString("address"));
+                            if (document.contains("entryFee")) space.setAdmissionFee(document.getDouble("entryFee"));
+                            if (document.contains("link")) space.setMapsURL(document.getString("link"));
+                            greenSpaces.add(space);
                         }
+                        sortPlacesByDistance();
+                        callback.onDataLoaded(greenSpaces);
                     }
-
-                    @Override
-                    public void onFailure(Throwable e) {
-
+                    else {
+                        callback.onFailure(task.getException());
                     }
                 });
+    }
+    private void sortPlacesByDistance() {
+        Collections.sort(greenSpaces, new Comparator<GreenSpace>() {
+            @Override
+            public int compare(GreenSpace space1, GreenSpace space2) {
+                return Double.compare(space1.getApproxDistance(), space2.getApproxDistance());
             }
         });
     }

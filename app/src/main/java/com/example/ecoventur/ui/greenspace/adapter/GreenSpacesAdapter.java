@@ -49,7 +49,7 @@ public class GreenSpacesAdapter extends RecyclerView.Adapter<GreenSpacesAdapter.
             TVRating = itemView.findViewById(R.id.TVRating);
         }
         public void bind(GreenSpace space) {
-            Picasso.get().load(space.getImage()).into(IVGreenSpace);
+//            Picasso.get().load(space.getImage()).into(IVGreenSpace);
             TVGreenSpaceName.setText(space.getName());
             TVApproxDist.setText(String.format("Approx. %.1f km", space.getApproxDistance()));
             TVRating.setText(String.valueOf(space.getRating()));

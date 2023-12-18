@@ -122,7 +122,7 @@ public class GreenSpaceFragment extends Fragment implements OnMapReadyCallback {
                 new GreenSpacesList(firestore, currentLatLng, new FirestoreCallback() {
                     @Override
                     public void onDataLoaded(Object object) {
-                        GreenSpacesAdapter greenSpacesAdapter = new GreenSpacesAdapter((ArrayList<GreenSpace>) object);
+                        GreenSpacesAdapter greenSpacesAdapter = new GreenSpacesAdapter((ArrayList<GreenSpace>) object, UID);
                         recyclerViewNearbyGreenSpaces.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
                         recyclerViewNearbyGreenSpaces.setAdapter(greenSpacesAdapter);
                     }

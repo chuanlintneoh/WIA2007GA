@@ -18,6 +18,9 @@ import androidx.annotation.NonNull;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
@@ -25,27 +28,36 @@ import com.google.firebase.storage.UploadTask;
 
 import com.example.ecoventur.R;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class WriteReviewDialog {
     private Activity activity;
     private ActivityResultLauncher<Intent> ARL;
+    private String placeId;
+    private String UID;
     private View dialogView;
     private ImageView IVReviewImage;
     private LinearProgressIndicator progressBar;
     private Button btnTakePhoto, btnSelectPhoto, btnRemovePhoto, btnCancel, btnSubmit;
     private RatingBar ratingBar;
     private EditText ETReview;
-    private Uri reviewImageUri = null;
+    private Uri reviewImageUri = null; // assign to IVReviewImage
+    private float rating;
+    private String review;
+    private String reviewImage = null; // save to Firestore
     public interface WriteReviewDialogListener {
         void onCancelClicked();
-        void onSubmitClicked(Uri imageUri, float rating, String review);
+        void onSubmitClicked();
     }
     private WriteReviewDialogListener listener;
-    public WriteReviewDialog (Activity activity, ActivityResultLauncher<Intent> ARL, WriteReviewDialogListener listener) {
+    public WriteReviewDialog (Activity activity, ActivityResultLauncher<Intent> ARL, WriteReviewDialogListener listener, String placeId, String UID) {
         this.activity = activity;
         this.ARL = ARL;
         this.listener = listener;
+        this.placeId = placeId;
+        this.UID = UID;
         show();
     }
     public void show() {
@@ -62,13 +74,11 @@ public class WriteReviewDialog {
         btnTakePhoto.setOnClickListener(view -> {
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             ARL.launch(intent);
-            handleReviewImage(intent);
         });
         btnSelectPhoto.setOnClickListener(view -> {
             Intent intent = new Intent(Intent.ACTION_PICK);
             intent.setType("image/*");
             ARL.launch(intent);
-            handleReviewImage(intent);
         });
         btnRemovePhoto.setOnClickListener(view -> {
             removeReviewImage();
@@ -79,10 +89,25 @@ public class WriteReviewDialog {
             alertDialog.dismiss();
         });
         btnSubmit.setOnClickListener(view -> {
-            float rating = ratingBar.getRating();
-            String review = ETReview.getText().toString();
-            if (listener != null) listener.onSubmitClicked(reviewImageUri, rating, review);
-            alertDialog.dismiss();
+            rating = ratingBar.getRating();
+            review = ETReview.getText().toString();
+            if (reviewImageUri != null) uploadImage(new Callback() {
+                @Override
+                public void onDataLoaded(Object object) {
+                    submitReview();
+                    if (listener != null) listener.onSubmitClicked();
+                    alertDialog.dismiss();
+                }
+                @Override
+                public void onFailure(Exception e) {
+                    Toast.makeText(activity, "Failed to upload image!" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+            else {
+                submitReview();
+                if (listener != null) listener.onSubmitClicked();
+                alertDialog.dismiss();
+            }
         });
 
         alertDialog.show();
@@ -98,26 +123,33 @@ public class WriteReviewDialog {
         btnCancel = dialogView.findViewById(R.id.btnCancel);
         btnSubmit = dialogView.findViewById(R.id.btnSubmit);
     }
-    public void setReviewImageUri(Uri reviewImageUri) {
-        Glide.with(dialogView).load(reviewImageUri).into(IVReviewImage);
-    }
     public void handleReviewImage(Intent data) {
         if (data != null && data.getData() != null) {
             reviewImageUri = data.getData();
-            setReviewImageUri(reviewImageUri);
+            Glide.with(dialogView).load(reviewImageUri).into(IVReviewImage);
         }
     }
-    public void removeReviewImage() {
+    private void removeReviewImage() {
         reviewImageUri = null;
         IVReviewImage.setImageResource(R.drawable.upload_placeholder);
     }
-    public void uploadImage() {
+    private void uploadImage(Callback callback) {
         StorageReference storageReference = FirebaseStorage.getInstance().getReference().child("reviewImages/" + UUID.randomUUID().toString());
         storageReference.putFile(reviewImageUri)
                 .addOnSuccessListener(taskSnapshot -> {
-                    Toast.makeText(activity, "Image uploaded successfully!", Toast.LENGTH_SHORT).show();
+                    storageReference.getDownloadUrl()
+                            .addOnSuccessListener(uri -> {
+                                reviewImage = uri.toString();
+                                callback.onDataLoaded(reviewImage);
+                                Toast.makeText(activity, "Image uploaded successfully!", Toast.LENGTH_SHORT).show();
+                            })
+                            .addOnFailureListener(e -> {
+                                callback.onFailure(e);
+                                Toast.makeText(activity, "Failed to get download Url!" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            });
                 })
                 .addOnFailureListener(e -> {
+                    callback.onFailure(e);
                     Toast.makeText(activity, "Image upload failed!" + e.getMessage(), Toast.LENGTH_SHORT).show();
                 })
                 .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
@@ -126,6 +158,27 @@ public class WriteReviewDialog {
                         progressBar.setMax(Math.toIntExact(taskSnapshot.getTotalByteCount()));
                         progressBar.setProgress(Math.toIntExact(taskSnapshot.getBytesTransferred()));
                     }
+                });
+    }
+    private void submitReview() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference reviewsRef = db.collection("greenSpaces").document(placeId).collection("reviews");
+
+        Map<String, Object> reviewData = new HashMap<>();
+        reviewData.put("description", review);
+        if (reviewImage != null){
+            reviewData.put("imageLink", reviewImage);
+        }
+        reviewData.put("rating", rating);
+        reviewData.put("reviewerUID", UID);
+        reviewData.put("time", FieldValue.serverTimestamp());
+
+        reviewsRef.add(reviewData)
+                .addOnSuccessListener(documentReference -> {
+                    Toast.makeText(activity, "Review submitted successfully!", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(activity, "Review submission failed!" + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
 }

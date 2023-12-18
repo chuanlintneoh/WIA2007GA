@@ -34,6 +34,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 public class GreenSpaceDetailsActivity extends AppCompatActivity implements OnMapReadyCallback {
     private String placeId;
+    private String UID;
     private GreenSpace space;
     private Bundle savedInstanceState;
     private MapView MVSpaceLocation;
@@ -60,6 +61,7 @@ public class GreenSpaceDetailsActivity extends AppCompatActivity implements OnMa
         Intent intent = getIntent();
         if (intent != null) {
             this.placeId = intent.getStringExtra("placeId");
+            this.UID = intent.getStringExtra("UID");
         }
         if (placeId != null) {
             FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
@@ -154,11 +156,11 @@ public class GreenSpaceDetailsActivity extends AppCompatActivity implements OnMa
                             }
 
                             @Override
-                            public void onSubmitClicked(Uri imageUri, float rating, String review) {
-                                Toast.makeText(GreenSpaceDetailsActivity.this, "Review submitted successfully!", Toast.LENGTH_SHORT).show();
+                            public void onSubmitClicked() {
+//                                Toast.makeText(GreenSpaceDetailsActivity.this, "Review submitted successfully!", Toast.LENGTH_SHORT).show();
                             }
-                        }
-                );
+                        },
+                        placeId, UID);
             }
         });
         CVShare.setOnClickListener(new View.OnClickListener() {

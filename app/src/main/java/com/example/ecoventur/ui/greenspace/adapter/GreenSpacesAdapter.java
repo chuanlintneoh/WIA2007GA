@@ -19,14 +19,16 @@ import java.util.ArrayList;
 
 public class GreenSpacesAdapter extends RecyclerView.Adapter<GreenSpacesAdapter.GreenSpaceViewHolder> {
     private ArrayList<GreenSpace> greenSpaces;
-    public GreenSpacesAdapter(ArrayList<GreenSpace> greenSpaces) {
+    private String UID;
+    public GreenSpacesAdapter(ArrayList<GreenSpace> greenSpaces, String UID) {
         this.greenSpaces = greenSpaces;
+        this.UID = UID;
     }
     @NonNull
     @Override
     public GreenSpaceViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_green_space, parent, false);
-        return new GreenSpaceViewHolder(view);
+        return new GreenSpaceViewHolder(view, UID);
     }
 
     @Override
@@ -44,13 +46,15 @@ public class GreenSpacesAdapter extends RecyclerView.Adapter<GreenSpacesAdapter.
         ImageView IVGreenSpace;
         TextView TVGreenSpaceName, TVApproxDist, TVRating;
         CardView CVGreenSpace;
-        public GreenSpaceViewHolder(@NonNull View itemView) {
+        private String UID;
+        public GreenSpaceViewHolder(@NonNull View itemView, String UID) {
             super(itemView);
             IVGreenSpace = itemView.findViewById(R.id.IVGreenSpace);
             TVGreenSpaceName = itemView.findViewById(R.id.TVGreenSpaceName);
             TVApproxDist = itemView.findViewById(R.id.TVApproxDist);
             TVRating = itemView.findViewById(R.id.TVRating);
             CVGreenSpace = itemView.findViewById(R.id.CVGreenSpaceItem);
+            this.UID = UID;
         }
         public void bind(GreenSpace space, ArrayList<GreenSpace> greenSpaces) {
 //            Picasso.get().load(space.getImage()).into(IVGreenSpace);
@@ -65,6 +69,7 @@ public class GreenSpacesAdapter extends RecyclerView.Adapter<GreenSpacesAdapter.
                         GreenSpace clickedSpace = greenSpaces.get(position);
                         Intent intent = new Intent(v.getContext(), GreenSpaceDetailsActivity.class);
                         intent.putExtra("placeId", clickedSpace.getPlaceId());
+                        intent.putExtra("UID", UID);
                         v.getContext().startActivity(intent);
                     }
                 }

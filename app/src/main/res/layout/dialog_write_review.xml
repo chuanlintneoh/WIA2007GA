@@ -7,8 +7,9 @@
     app:cardCornerRadius="16dp">
 
     <LinearLayout
-        android:layout_width="310dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:orientation="vertical">
         <TextView
             android:layout_width="wrap_content"
@@ -19,10 +20,10 @@
             android:layout_gravity="center"
             android:layout_margin="2dp"/>
         <ScrollView
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="500dp">
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
                 <ImageView
@@ -38,13 +39,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="2dp"/>
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnTakePhoto"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:text="Take Photo"
                         android:textColor="@color/green"
@@ -57,8 +58,8 @@
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnSelectPhoto"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1.1"
                         android:text="Select Photo"
                         android:textColor="@color/green"
                         app:strokeColor="@color/green"
@@ -70,8 +71,8 @@
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnRemovePhoto"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1.2"
                         android:text="Remove Photo"
                         android:textColor="@color/green"
                         app:strokeColor="@color/green"

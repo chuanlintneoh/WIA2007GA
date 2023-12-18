@@ -76,7 +76,7 @@ public class GreenSpaceDetailsActivity extends AppCompatActivity implements OnMa
                 initializeWidgets();
                 this.space = new GreenSpace(placeId, currentLatLng, new Callback() {
                     @Override
-                    public void onDataLoaded (Object space) {
+                    public void onDataLoaded (Object object) {
                         assignUIWidgets();
                     }
                     @Override
@@ -144,7 +144,15 @@ public class GreenSpaceDetailsActivity extends AppCompatActivity implements OnMa
             TVSpaceLink.setHighlightColor(Color.TRANSPARENT);
         }
 
-//        LLSpaceReviews
+        LLSpaceReviews.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(GreenSpaceDetailsActivity.this, GreenSpaceReviewsActivity.class);
+                intent.putExtra("placeId", placeId);
+                intent.putExtra("UID", UID);
+                startActivity(intent);
+            }
+        });
         CVWriteReview.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

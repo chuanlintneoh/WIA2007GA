@@ -87,7 +87,7 @@ public class GreenSpaceReviewsActivity extends AppCompatActivity {
             }
         });
         TVTotalRatings.setText(String.format("Average (%d)", getNoOfRatings()));
-        TVAverageRating.setText(String.format("%.1f", calcAverageRating()));
+        if (getNoOfRatings() > 0) TVAverageRating.setText(String.format("%.1f", calcAverageRating()));
         float[] ratingsCount = countRatingPercentages();
         PB5Star.setProgress(Math.round(ratingsCount[4]));
         PB4Star.setProgress(Math.round(ratingsCount[3]));

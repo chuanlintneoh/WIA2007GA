@@ -53,12 +53,12 @@ public class GreenSpace {
 //        }
 ////        this.admissionFee = admissionFee;
 //    }
-    public GreenSpace (String placeId, LatLng currentLatLng, FirestoreCallback callback) {
+    public GreenSpace (String placeId, LatLng currentLatLng, Callback callback) {
         // find and retrieve details of GreenSpace using placeId
         this.placeId = placeId;
         fetchDetailsFromFirestore(currentLatLng, callback);
     }
-    private void fetchDetailsFromFirestore(LatLng currentLatLng, FirestoreCallback callback) {
+    private void fetchDetailsFromFirestore(LatLng currentLatLng, Callback callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("greenSpaces").document(placeId)
                 .get()

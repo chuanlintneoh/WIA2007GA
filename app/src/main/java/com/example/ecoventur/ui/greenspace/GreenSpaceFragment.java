@@ -119,7 +119,7 @@ public class GreenSpaceFragment extends Fragment implements OnMapReadyCallback {
             if (location != null) {
                 currentLatLng = new com.google.maps.model.LatLng(location.getLatitude(), location.getLongitude());
                 FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-                new GreenSpacesList(firestore, currentLatLng, new FirestoreCallback() {
+                new GreenSpacesList(firestore, currentLatLng, new Callback() {
                     @Override
                     public void onDataLoaded(Object object) {
                         GreenSpacesAdapter greenSpacesAdapter = new GreenSpacesAdapter((ArrayList<GreenSpace>) object, UID);
@@ -140,7 +140,7 @@ public class GreenSpaceFragment extends Fragment implements OnMapReadyCallback {
         RecyclerView recyclerViewDiscoverGreenEvents = binding.recyclerViewDiscoverGreenEvents;
 //        GreenEventsAdapter adapter = new GreenEventsAdapter(new GreenEventsList().getGreenEvents());//hardcoded
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-        new GreenEventsList(firestore, new FirestoreCallback() {
+        new GreenEventsList(firestore, new Callback() {
             @Override
             public void onDataLoaded(Object object) {
                 GreenEventsAdapter eventsAdapter = new GreenEventsAdapter((ArrayList<GreenEvent>) object);
@@ -157,7 +157,7 @@ public class GreenSpaceFragment extends Fragment implements OnMapReadyCallback {
         CardView cardViewEventsWishlistHeader = root.findViewById(R.id.CVEventsWishlistHeader);
         RecyclerView recyclerViewMyEventsWishlist = binding.recyclerViewMyEventsWishlist;
         firestore = FirebaseFirestore.getInstance();
-        new GreenEventsList(firestore, UID, new FirestoreCallback() {
+        new GreenEventsList(firestore, UID, new Callback() {
             @Override
             public void onDataLoaded(Object object) {
                 GreenEventsAdapter wishlistAdapter = new GreenEventsAdapter((ArrayList<GreenEvent>) object);

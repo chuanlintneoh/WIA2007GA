@@ -55,7 +55,7 @@ public class GreenEventDetailsActivity extends AppCompatActivity {
                     currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
                 }
                 initializeWidgets();
-                this.event = new GreenEvent(eventId, UID, currentLatLng, new FirestoreCallback() {
+                this.event = new GreenEvent(eventId, UID, currentLatLng, new Callback() {
                     @Override
                     public void onDataLoaded(Object object) {
                         assignUIWidgets();
@@ -167,7 +167,7 @@ public class GreenEventDetailsActivity extends AppCompatActivity {
         CVSaveEventToWishlist.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                saveToWishlist(new FirestoreCallback() {
+                saveToWishlist(new Callback() {
                     @Override
                     public void onDataLoaded(Object object) {
                         CVSaveEventToWishlist.setVisibility(View.GONE);
@@ -183,7 +183,7 @@ public class GreenEventDetailsActivity extends AppCompatActivity {
         CVEventSavedToWishlist.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                removeFromWishlist(new FirestoreCallback() {
+                removeFromWishlist(new Callback() {
                     @Override
                     public void onDataLoaded(Object object) {
                         CVSaveEventToWishlist.setVisibility(View.VISIBLE);
@@ -213,7 +213,7 @@ public class GreenEventDetailsActivity extends AppCompatActivity {
             }
         });
     }
-    private void saveToWishlist(FirestoreCallback callback) {
+    private void saveToWishlist(Callback callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference eventRef = db.document("greenEvents/" + eventId);
 
@@ -229,7 +229,7 @@ public class GreenEventDetailsActivity extends AppCompatActivity {
                 })
                 .addOnFailureListener(callback::onFailure);
     }
-    private void removeFromWishlist(FirestoreCallback callback) {
+    private void removeFromWishlist(Callback callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("users").document(UID)
                 .collection("eventsWishlist")

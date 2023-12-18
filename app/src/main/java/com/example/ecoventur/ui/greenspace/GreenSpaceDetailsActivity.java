@@ -74,13 +74,13 @@ public class GreenSpaceDetailsActivity extends AppCompatActivity implements OnMa
                     currentLatLng = new com.google.maps.model.LatLng(location.getLatitude(), location.getLongitude());
                 }
                 initializeWidgets();
-                this.space = new GreenSpace(placeId, currentLatLng, new FirestoreCallback() {
+                this.space = new GreenSpace(placeId, currentLatLng, new Callback() {
                     @Override
-                    public void onDataLoaded(Object space) {
+                    public void onDataLoaded (Object space) {
                         assignUIWidgets();
                     }
                     @Override
-                    public void onFailure(Exception e) {
+                    public void onFailure (Exception e) {
                         System.out.println("Error retrieving green space details: " + e);
                     }
                 });

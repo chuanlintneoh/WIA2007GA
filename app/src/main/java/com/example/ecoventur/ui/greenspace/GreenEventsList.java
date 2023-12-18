@@ -38,17 +38,17 @@ public class GreenEventsList {
         greenEvents.add(new GreenEvent("Beach Cleanup", "11 Nov 2023", "Pantai Tanjung Piai", 50));
         greenEvents.add(new GreenEvent("Eco-Workshops", "15 Nov 2023", "Online", 5));
     }
-    public GreenEventsList(FirebaseFirestore db, FirestoreCallback callback) {
+    public GreenEventsList(FirebaseFirestore db, Callback callback) {
         //retrieve all upcoming green events from firestore
         today = new Date();
         retrieveFirestoreData(db, callback);
     }
-    public GreenEventsList(FirebaseFirestore db, String UID, FirestoreCallback callback) {
+    public GreenEventsList(FirebaseFirestore db, String UID, Callback callback) {
         //retrieve user's saved green events wishlist from firestore
         today = new Date();
         retrieveUserWishlist(db, UID, callback);
     }
-    private void retrieveFirestoreData(FirebaseFirestore db, FirestoreCallback callback) {
+    private void retrieveFirestoreData(FirebaseFirestore db, Callback callback) {
         //retrieve data from firestore
         db.collection("greenEvents")
                 .whereGreaterThanOrEqualTo("date", today)
@@ -75,10 +75,10 @@ public class GreenEventsList {
                     }
                 });
     }
-    private void retrieveUserWishlist(FirebaseFirestore db, String UID, FirestoreCallback callback) {
+    private void retrieveUserWishlist(FirebaseFirestore db, String UID, Callback callback) {
         //retrieve user's wishlist from firestore
         //first retrieve all upcoming green events from firestore then filter out the ones in user's wishlist
-        retrieveFirestoreData(db, new FirestoreCallback() {
+        retrieveFirestoreData(db, new Callback() {
             @Override
             public void onDataLoaded(Object object) {
                 List<String> eventIds = new ArrayList<>();

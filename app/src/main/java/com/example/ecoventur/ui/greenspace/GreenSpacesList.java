@@ -61,7 +61,7 @@ public class GreenSpacesList {
 //        placesClient = Places.createClient(context);
 //        fetchNearbyGreenSpaces();
 //    }
-    public GreenSpacesList(FirebaseFirestore db, LatLng currentLatLng, FirestoreCallback callback) {
+    public GreenSpacesList(FirebaseFirestore db, LatLng currentLatLng, Callback callback) {
         //fetch firestore hardcoded data
         retrieveFirestoreData(db, currentLatLng, callback);
     }
@@ -108,7 +108,7 @@ public class GreenSpacesList {
 //            }
 //        });
 //    }
-    private void retrieveFirestoreData(FirebaseFirestore db, LatLng currentLatLng, FirestoreCallback callback) {
+    private void retrieveFirestoreData(FirebaseFirestore db, LatLng currentLatLng, Callback callback) {
         db.collection("greenSpaces")
                 .get()
                 .addOnCompleteListener(task -> {

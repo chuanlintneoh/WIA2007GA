@@ -44,12 +44,12 @@ public class GreenEvent {
         this.venue = venue;
         this.ecoCoins = ecoCoins;
     }
-    public GreenEvent (String eventId, String UID, LatLng currentLatLng, FirestoreCallback callback) {
+    public GreenEvent (String eventId, String UID, LatLng currentLatLng, Callback callback) {
         // for Firestore (retrieving details of specified GreenEvent)
         this.eventId = eventId;
         fetchDetailsFromFirestore(UID, currentLatLng, callback);
     }
-    private void fetchDetailsFromFirestore(String UID, LatLng currentLatLng, FirestoreCallback callback) {
+    private void fetchDetailsFromFirestore(String UID, LatLng currentLatLng, Callback callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("greenEvents").document(eventId)
                 .get()

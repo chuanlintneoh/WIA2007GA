@@ -49,7 +49,7 @@ public class GreenSpacesList {
         GreenSpace space = new GreenSpace("KLCC Park", 2.7, 4.6);
         space.setOpeningHours("10 am - 10 pm (Wednesday)");
         space.setAddress("KLCC, Lot No. 241, Level 2, Suria, Kuala Lumpur City Centre, 50088 Kuala Lumpur");
-        space.setAdmissionFee(0.00);
+        space.setEntryFee(0.00);
         space.setMapsURL("https://maps.app.goo.gl/e9KBcMLR2dGc3PJV7");
         greenSpaces.add(space);
     }
@@ -124,7 +124,7 @@ public class GreenSpacesList {
                             space.setApproxDistance(HaversineFormula(currentLatLng, space.getLocation()));
                             if (document.contains("openingHours")) space.setOpeningHours(document.getString("openingHours"));
                             if (document.contains("address")) space.setAddress(document.getString("address"));
-                            if (document.contains("entryFee")) space.setAdmissionFee(document.getDouble("entryFee"));
+                            if (document.contains("entryFee")) space.setEntryFee(document.getDouble("entryFee"));
                             if (document.contains("link")) space.setMapsURL(document.getString("link"));
                             greenSpaces.add(space);
                         }

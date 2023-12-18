@@ -40,9 +40,7 @@ public class GreenEventsAdapter extends RecyclerView.Adapter<GreenEventsAdapter.
     }
 
     static class GreenEventViewHolder extends RecyclerView.ViewHolder {
-        TextView TVEventName;
-        TextView TVEventDate_Venue;
-        TextView TVEventEcoCoins;
+        TextView TVEventName, TVEventDate_Venue, TVEventEcoCoins;
         CardView CVGreenEvent;
         public GreenEventViewHolder(@NonNull View itemView) {
             super(itemView);

@@ -1,5 +1,10 @@
 package com.example.ecoventur.ui.greenspace;
 
+import static com.example.ecoventur.ui.greenspace.approxDistanceBetweenLocation.HaversineFormula;
+
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.GeoPoint;
 import com.google.maps.model.LatLng;
 import com.google.maps.model.Geometry;
 import com.google.maps.model.OpeningHours;
@@ -13,7 +18,7 @@ public class GreenSpace {
     private com.google.android.gms.maps.model.LatLng mapsLatLng = null; // for Maps view
     private String openingHours = "Unspecified Opening Hours";
     private String address = "Unspecified Address";
-    private double admissionFee = -1.0;
+    private double entryFee = -1.0;
     private String mapsURL = null;
     public GreenSpace () {
         // empty constructor required for Firestore (retrieving list of GreenSpaces)
@@ -48,6 +53,35 @@ public class GreenSpace {
 //        }
 ////        this.admissionFee = admissionFee;
 //    }
+    public GreenSpace (String placeId, LatLng currentLatLng, FirestoreCallback callback) {
+        // find and retrieve details of GreenSpace using placeId
+        this.placeId = placeId;
+        fetchDetailsFromFirestore(currentLatLng, callback);
+    }
+    private void fetchDetailsFromFirestore(LatLng currentLatLng, FirestoreCallback callback) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("greenSpaces").document(placeId)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.contains("name")) this.setName(document.getString("name"));
+                        GeoPoint geoPoint = document.getGeoPoint("latLng");
+                        if (geoPoint != null) {
+                            this.setLocation(new LatLng(geoPoint.getLatitude(), geoPoint.getLongitude()));
+                            this.setMapsLatLng(new com.google.android.gms.maps.model.LatLng(geoPoint.getLatitude(), geoPoint.getLongitude()));
+                        }
+                        this.setApproxDistance(HaversineFormula(currentLatLng,location));
+                        if (document.contains("openingHours")) this.setOpeningHours(document.getString("openingHours"));
+                        if (document.contains("address")) this.setAddress(document.getString("address"));
+                        if (document.contains("entryFee")) this.setEntryFee(document.getDouble("entryFee"));
+                        if (document.contains("link")) this.setMapsURL(document.getString("link"));
+                        callback.onDataLoaded(this);
+                    } else {
+                        callback.onFailure(new Exception("Document does not exist."));
+                    }
+                });
+    }
     public String getPlaceId() {
         return placeId;
     }
@@ -72,8 +106,8 @@ public class GreenSpace {
     public String getAddress() {
         return address;
     }
-    public double getAdmissionFee() {
-        return admissionFee;
+    public double getEntryFee() {
+        return entryFee;
     }
     public String getMapsURL() {
         return mapsURL;
@@ -93,14 +127,17 @@ public class GreenSpace {
     public void setLocation(LatLng location) {
         this.location = location;
     }
+    public void setMapsLatLng(com.google.android.gms.maps.model.LatLng mapsLatLng) {
+        this.mapsLatLng = mapsLatLng;
+    }
     public void setOpeningHours(String openingHours) {
         this.openingHours = openingHours;
     }
     public void setAddress(String address) {
         this.address = address;
     }
-    public void setAdmissionFee(double admissionFee) {
-        this.admissionFee = admissionFee;
+    public void setEntryFee(double entryFee) {
+        this.entryFee = entryFee;
     }
     public void setMapsURL(String mapsURL) {
         this.mapsURL = mapsURL;

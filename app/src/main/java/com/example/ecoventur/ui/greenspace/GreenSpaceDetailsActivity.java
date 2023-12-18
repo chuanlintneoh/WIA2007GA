@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
@@ -12,19 +13,27 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 
 import com.example.ecoventur.R;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 public class GreenSpaceDetailsActivity extends AppCompatActivity implements OnMapReadyCallback {
+    private String placeId;
     private GreenSpace space;
     private Bundle savedInstanceState;
     private MapView MVSpaceLocation;
@@ -32,6 +41,16 @@ public class GreenSpaceDetailsActivity extends AppCompatActivity implements OnMa
     private TextView TVSpaceName, TVSpaceOpeningHours, TVSpaceAddress, TVSpaceDistance, TVSpaceFee, TVSpaceLink;
     private LinearLayout LLSpaceReviews;
     private CardView CVWriteReview, CVShare;
+    ActivityResultLauncher<Intent> ARL = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+        @Override
+        public void onActivityResult(ActivityResult result) {
+            if (result.getResultCode() == RESULT_OK) {
+                Intent data = result.getData();
+                if (writeReviewDialog != null) writeReviewDialog.handleReviewImage(data);
+            }
+        }
+    });
+    WriteReviewDialog writeReviewDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,9 +59,30 @@ public class GreenSpaceDetailsActivity extends AppCompatActivity implements OnMa
 
         Intent intent = getIntent();
         if (intent != null) {
-//            this.space = intent.getStringExtra("placeId");
-            initializeWidgets();
-            assignUIWidgets();
+            this.placeId = intent.getStringExtra("placeId");
+        }
+        if (placeId != null) {
+            FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            }
+            fusedLocationProviderClient.getLastLocation().addOnSuccessListener(location -> {
+                com.google.maps.model.LatLng currentLatLng = null;
+                if (location != null) {
+                    currentLatLng = new com.google.maps.model.LatLng(location.getLatitude(), location.getLongitude());
+                }
+                initializeWidgets();
+                this.space = new GreenSpace(placeId, currentLatLng, new FirestoreCallback() {
+                    @Override
+                    public void onDataLoaded(Object space) {
+                        assignUIWidgets();
+                    }
+                    @Override
+                    public void onFailure(Exception e) {
+                        System.out.println("Error retrieving green space details: " + e);
+                    }
+                });
+            });
         }
     }
     @Override
@@ -56,11 +96,14 @@ public class GreenSpaceDetailsActivity extends AppCompatActivity implements OnMa
             }
         }
         googleMap.setMyLocationEnabled(true);
-        googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-        // move camera to location of green space
-        LatLng location = space.getMapsLatLng();
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 15));
         googleMap.getUiSettings().setZoomControlsEnabled(true);
+        googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+        // move camera to location of green space and add marker
+        LatLng location = space.getMapsLatLng();
+        MarkerOptions greenSpaceMarker = new MarkerOptions().position(location).title(space.getName());
+        googleMap.addMarker(greenSpaceMarker);
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 15));
+
     }
     private void initializeWidgets() {
         MVSpaceLocation = findViewById(R.id.MVSpaceLocation);
@@ -88,9 +131,9 @@ public class GreenSpaceDetailsActivity extends AppCompatActivity implements OnMa
             TVSpaceDistance.setText("Distance from current location not available");
         }
 
-        if (space.getAdmissionFee() == 0.0) TVSpaceFee.setText("FREE");
-        else if (space.getAdmissionFee() == -1.0) TVSpaceFee.setText("Entry Fee Unspecified");
-        else TVSpaceFee.setText(String.format("RM %.2f", space.getAdmissionFee()));
+        if (space.getEntryFee() == 0.0) TVSpaceFee.setText("FREE");
+        else if (space.getEntryFee() == -1.0) TVSpaceFee.setText("Entry Fee Unspecified");
+        else TVSpaceFee.setText(String.format("RM %.2f", space.getEntryFee()));
 
         if (space.getMapsURL() != null) {
             SpannableString spannableLink = customTabLauncher.makeTextSpannable("View in Google Maps", space.getMapsURL());
@@ -100,7 +143,24 @@ public class GreenSpaceDetailsActivity extends AppCompatActivity implements OnMa
         }
 
 //        LLSpaceReviews
-//        CVWriteReview
+        CVWriteReview.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                writeReviewDialog = new WriteReviewDialog(GreenSpaceDetailsActivity.this, ARL,
+                        new WriteReviewDialog.WriteReviewDialogListener() {
+                            @Override
+                            public void onCancelClicked() {
+                                Toast.makeText(GreenSpaceDetailsActivity.this, "Review cancelled.", Toast.LENGTH_SHORT).show();
+                            }
+
+                            @Override
+                            public void onSubmitClicked(Uri imageUri, float rating, String review) {
+                                Toast.makeText(GreenSpaceDetailsActivity.this, "Review submitted successfully!", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                );
+            }
+        });
         CVShare.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

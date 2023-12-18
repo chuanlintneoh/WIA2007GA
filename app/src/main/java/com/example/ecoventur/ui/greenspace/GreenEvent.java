@@ -49,7 +49,7 @@ public class GreenEvent {
         this.eventId = eventId;
         fetchDetailsFromFirestore(UID, currentLatLng, callback);
     }
-    public void fetchDetailsFromFirestore(String UID, LatLng currentLatLng, FirestoreCallback callback) {
+    private void fetchDetailsFromFirestore(String UID, LatLng currentLatLng, FirestoreCallback callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("greenEvents").document(eventId)
                 .get()

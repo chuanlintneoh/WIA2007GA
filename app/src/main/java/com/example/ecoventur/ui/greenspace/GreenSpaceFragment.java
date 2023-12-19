@@ -32,6 +32,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.libraries.places.api.Places;
@@ -125,6 +126,18 @@ public class GreenSpaceFragment extends Fragment implements OnMapReadyCallback {
                         GreenSpacesAdapter greenSpacesAdapter = new GreenSpacesAdapter((ArrayList<GreenSpace>) object, UID);
                         recyclerViewNearbyGreenSpaces.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
                         recyclerViewNearbyGreenSpaces.setAdapter(greenSpacesAdapter);
+
+                        //add markers to map
+                        for (GreenSpace space : (ArrayList<GreenSpace>) object) {
+                            LatLng location = space.getMapsLatLng();
+                            if (location != null){
+                                MarkerOptions greenSpaceMarker = new MarkerOptions()
+                                        .position(location)
+                                        .title(space.getName())
+                                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                                googleMap.addMarker(greenSpaceMarker);
+                            }
+                        }
                     }
                     @Override
                     public void onFailure(Exception e) {

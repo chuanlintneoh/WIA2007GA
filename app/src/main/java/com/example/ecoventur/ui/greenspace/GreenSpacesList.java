@@ -121,6 +121,7 @@ public class GreenSpacesList {
                             GeoPoint geoPoint = document.getGeoPoint("latLng");
                             if (geoPoint != null){
                                 space.setLocation(new LatLng(geoPoint.getLatitude(), geoPoint.getLongitude()));
+                                space.setMapsLatLng(new com.google.android.gms.maps.model.LatLng(geoPoint.getLatitude(), geoPoint.getLongitude()));
                             }
                             space.setApproxDistance(HaversineFormula(currentLatLng, space.getLocation()));
                             if (document.contains("openingHours")) space.setOpeningHours(document.getString("openingHours"));

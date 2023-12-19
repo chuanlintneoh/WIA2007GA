@@ -162,10 +162,8 @@ public class GreenSpaceDetailsActivity extends AppCompatActivity implements OnMa
                             public void onCancelClicked() {
                                 Toast.makeText(GreenSpaceDetailsActivity.this, "Review cancelled.", Toast.LENGTH_SHORT).show();
                             }
-
                             @Override
                             public void onSubmitClicked() {
-//                                Toast.makeText(GreenSpaceDetailsActivity.this, "Review submitted successfully!", Toast.LENGTH_SHORT).show();
                             }
                         },
                         placeId, UID);

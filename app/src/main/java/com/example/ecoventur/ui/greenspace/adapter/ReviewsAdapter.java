@@ -53,7 +53,7 @@ public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ReviewVi
         public void bind(Review review) {
             TVReviewerName.setText(review.getReviewerName());
             TVReviewRating.setText("Rated: " + review.getRating() + "/5");
-            if (review.getDescription() == null) {
+            if (review.getDescription() == null || review.getDescription().equals("")) {
                 TVReviewDesc.setVisibility(View.GONE);
             }
             else {

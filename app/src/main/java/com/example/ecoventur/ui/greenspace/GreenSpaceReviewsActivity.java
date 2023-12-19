@@ -109,7 +109,6 @@ public class GreenSpaceReviewsActivity extends AppCompatActivity {
 
                             @Override
                             public void onSubmitClicked() {
-//                                Toast.makeText(GreenSpaceDetailsActivity.this, "Review submitted successfully!", Toast.LENGTH_SHORT).show();
                             }
                         },
                         placeId, UID);

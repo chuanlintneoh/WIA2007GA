@@ -10,7 +10,9 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 public class ReviewsList {
@@ -57,7 +59,7 @@ public class ReviewsList {
                                 for (int i = 0; i < userTasks.size(); i++) {
                                     DocumentSnapshot userSnapshot = (DocumentSnapshot) taskSnapshots.get(i).getResult();
                                     if (userSnapshot != null && userSnapshot.contains("username")) {
-                                        reviews.get(i).setReviewerName(userSnapshot.getString("name"));
+                                        reviews.get(i).setReviewerName(userSnapshot.getString("username"));
                                     }
                                 }
                                 callback.onDataLoaded(reviews);

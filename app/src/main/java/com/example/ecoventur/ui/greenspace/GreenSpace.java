@@ -11,6 +11,7 @@ import com.google.maps.model.OpeningHours;
 
 public class GreenSpace {
     private String placeId = null;
+    private String imageLink = null;
     private String name = "Unspecified Green Space Name";
     private double approxDistance = -1.0;
     private double rating = -1.0;
@@ -65,6 +66,7 @@ public class GreenSpace {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful() && task.getResult() != null) {
                         DocumentSnapshot document = task.getResult();
+                        if (document.contains("imageLink")) this.setImageLink(document.getString("imageLink"));
                         if (document.contains("name")) this.setName(document.getString("name"));
                         GeoPoint geoPoint = document.getGeoPoint("latLng");
                         if (geoPoint != null) {
@@ -84,6 +86,9 @@ public class GreenSpace {
     }
     public String getPlaceId() {
         return placeId;
+    }
+    public String getImageLink() {
+        return imageLink;
     }
     public String getName() {
         return name;
@@ -114,6 +119,9 @@ public class GreenSpace {
     }
     public void setPlaceId(String placeId) {
         this.placeId = placeId;
+    }
+    public void setImageLink(String imageLink) {
+        this.imageLink = imageLink;
     }
     public void setName(String name) {
         this.name = name;

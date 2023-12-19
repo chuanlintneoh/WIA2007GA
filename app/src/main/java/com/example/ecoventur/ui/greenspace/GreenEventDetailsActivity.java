@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 
+import com.bumptech.glide.Glide;
 import com.example.ecoventur.R;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -86,12 +87,16 @@ public class GreenEventDetailsActivity extends AppCompatActivity {
         CVShare = findViewById(R.id.CVShare);
     }
     private void assignUIWidgets() {
-        if (event.getImage() == null) {
-            IVEventImage.setImageResource(R.drawable.camping_field);
+        if (event.getImageLink() != null) {
+            Glide.with(this)
+                    .load(event.getImageLink())
+                    .into(IVEventImage);
         }
-//        else {
-//            IVEventImage.setImageResource(event.getImage());
-//        }
+        else {
+            Glide.with(this)
+                    .load(R.drawable.event_card)
+                    .into(IVEventImage);
+        }
 
         TVEventName.setText(event.getName());
 

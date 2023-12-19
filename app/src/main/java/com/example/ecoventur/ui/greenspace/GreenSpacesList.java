@@ -116,6 +116,7 @@ public class GreenSpacesList {
                         for (QueryDocumentSnapshot document: task.getResult()) {
                             GreenSpace space = new GreenSpace();
                             space.setPlaceId(document.getId());
+                            if (document.contains("imageLink")) space.setImageLink(document.getString("imageLink"));
                             if (document.contains("name")) space.setName(document.getString("name"));
                             GeoPoint geoPoint = document.getGeoPoint("latLng");
                             if (geoPoint != null){

@@ -21,7 +21,7 @@ public class GreenEvent {
     private String date = "Unspecified Date";
     private String venue = "Unspecified Event Venue";
     private int ecoCoins = -1;
-    private Image image = null;
+    private String imageLink = null;
     private String duration = "Unspecified Duration";
     private double registrationFee = -1.0;
     private String venueAddress = "Unspecified Venue Address";
@@ -64,7 +64,7 @@ public class GreenEvent {
                         }
                         if (document.contains("venue")) this.setVenue(document.getString("venue"));
                         if (document.contains("ecoCoins")) this.setEcoCoins(document.getLong("ecoCoins").intValue());
-//                        this.setImage(document.getString("image"));
+                        if (document.contains("imageLink")) this.setImageLink(document.getString("imageLink"));
                         if (document.contains("duration")) this.setDuration(document.getString("duration"));
                         if (document.contains("registrationFee")) this.setRegistrationFee(document.getDouble("registrationFee"));
                         if (document.contains("venueAddress")) this.setVenueAddress(document.getString("venueAddress"));
@@ -126,8 +126,8 @@ public class GreenEvent {
     public int getEcoCoins() {
         return ecoCoins;
     }
-    public Image getImage() {
-        return image;
+    public String getImageLink() {
+        return imageLink;
     }
     public String getDuration() {
         return duration;
@@ -177,8 +177,8 @@ public class GreenEvent {
     public void setEcoCoins(int ecoCoins) {
         this.ecoCoins = ecoCoins;
     }
-    public void setImage(Image image) {
-        this.image = image;
+    public void setImageLink(String imageLink) {
+        this.imageLink = imageLink;
     }
     public void setDuration(String duration) {
         this.duration = duration;

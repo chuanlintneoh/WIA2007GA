@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.ecoventur.R;
 import com.example.ecoventur.ui.greenspace.GreenSpace;
 import com.example.ecoventur.ui.greenspace.GreenSpaceDetailsActivity;
@@ -57,7 +58,16 @@ public class GreenSpacesAdapter extends RecyclerView.Adapter<GreenSpacesAdapter.
             this.UID = UID;
         }
         public void bind(GreenSpace space, ArrayList<GreenSpace> greenSpaces) {
-//            Picasso.get().load(space.getImage()).into(IVGreenSpace);
+            if (space.getImageLink() != null){
+                Glide.with(itemView.getContext())
+                        .load(space.getImageLink())
+                        .into(IVGreenSpace);
+            }
+            else {
+                Glide.with(itemView.getContext())
+                        .load(R.drawable.greenspace_placeholder)
+                        .into(IVGreenSpace);
+            }
             TVGreenSpaceName.setText(space.getName());
             TVApproxDist.setText(String.format("Approx. %.1f km", space.getApproxDistance()));
             TVRating.setText(String.valueOf(space.getRating()));

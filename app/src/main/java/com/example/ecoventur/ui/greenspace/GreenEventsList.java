@@ -25,7 +25,7 @@ public class GreenEventsList {
         //hardcoded data
         greenEvents.add(new GreenEvent("Tree Planting Day", "10 Nov 2023", "Botanical Garden KL", 50));
         GreenEvent event = new GreenEvent("Nature Walks", "11 Nov 2023 - 13 Nov 2023", "Lake Garden KL", 10);
-        event.setImage(null);
+        event.setImageLink(null);
         event.setDuration("All day");
         event.setRegistrationFee(0.00);
         event.setVenueAddress("Perdana Botanical Gardens, 50480 Kuala Lumpur, Federal Territory of Kuala Lumpur");

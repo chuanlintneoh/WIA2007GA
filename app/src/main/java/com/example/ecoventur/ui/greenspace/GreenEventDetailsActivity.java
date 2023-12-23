@@ -2,6 +2,7 @@ package com.example.ecoventur.ui.greenspace;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -26,8 +27,12 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.maps.model.LatLng;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TimeZone;
 
 public class GreenEventDetailsActivity extends AppCompatActivity {
     private String eventId;
@@ -177,6 +182,33 @@ public class GreenEventDetailsActivity extends AppCompatActivity {
                     public void onDataLoaded(Object object) {
                         CVSaveEventToWishlist.setVisibility(View.GONE);
                         CVEventSavedToWishlist.setVisibility(View.VISIBLE);
+                        if (calculateScheduledTime(event.getDate(), 7) != -1) {
+                            notificationScheduler.scheduleNotification(
+                                    getApplicationContext(),
+                                    String.format("Soft Reminder: Upcoming Green Event"),
+                                    String.format("\uD83C\uDF1F Don't miss out: %s in 7 days! %d people are interested!", event.getName(), event.getInterested()),
+                                    event.getEventId().hashCode() * 10 + 7,
+                                    calculateScheduledTime(event.getDate(), 7)
+                            );
+                        }
+                        if (calculateScheduledTime(event.getDate(), 3) != -1) {
+                            notificationScheduler.scheduleNotification(
+                                    getApplicationContext(),
+                                    String.format("Soft Reminder: Upcoming Green Event"),
+                                    String.format("\uD83D\uDE80 Just 3 days until %s! %d people are going!", event.getName(), event.getGoing()),
+                                    event.getEventId().hashCode() * 10 + 3,
+                                    calculateScheduledTime(event.getDate(), 3)
+                            );
+                        }
+                        if (calculateScheduledTime(event.getDate(), 0) != -1) {
+                            notificationScheduler.scheduleNotification(
+                                    getApplicationContext(),
+                                    String.format("Green Event Today"),
+                                    String.format("\uD83C\uDF89 %s is happening today! Event will happen on %s, at %s. Can't wait to see you there!", event.getName(), event.getDuration(), event.getVenue()),
+                                    event.getEventId().hashCode() * 10,
+                                    calculateScheduledTime(event.getDate(), 0)
+                            );
+                        }
                     }
                     @Override
                     public void onFailure(Exception e) {
@@ -193,6 +225,9 @@ public class GreenEventDetailsActivity extends AppCompatActivity {
                     public void onDataLoaded(Object object) {
                         CVSaveEventToWishlist.setVisibility(View.VISIBLE);
                         CVEventSavedToWishlist.setVisibility(View.GONE);
+                        notificationScheduler.cancelScheduledNotification(getApplicationContext(), event.getEventId().hashCode() * 10 + 7);
+                        notificationScheduler.cancelScheduledNotification(getApplicationContext(), event.getEventId().hashCode() * 10 + 3);
+                        notificationScheduler.cancelScheduledNotification(getApplicationContext(), event.getEventId().hashCode() * 10);
                     }
                     @Override
                     public void onFailure(Exception e) {
@@ -259,5 +294,24 @@ public class GreenEventDetailsActivity extends AppCompatActivity {
                 .addOnFailureListener(e -> {
                     System.out.println("Error getting documents: " + e);
                 });
+    }
+    private long calculateScheduledTime(String date, int daysBefore) {
+        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Kuala_Lumpur"));
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        dateFormat.setTimeZone(TimeZone.getTimeZone("Asia/Kuala_Lumpur"));
+        try {
+            calendar.setTime(dateFormat.parse(date));
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return -1;
+        }
+        calendar.add(Calendar.DAY_OF_YEAR, -daysBefore);
+
+        return calendar.getTimeInMillis();
     }
 }

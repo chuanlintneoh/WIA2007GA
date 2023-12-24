@@ -21,10 +21,13 @@ import com.example.ecoventur.ui.greenspace.adapter.ReviewsAdapter;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
+
 public class GreenSpaceReviewsActivity extends AppCompatActivity {
     private String placeId;
     private String UID;
     private ReviewsList reviewsList;
+    private ArrayList<Review> reviews;
     private TextView TVSpaceName, TVTotalRatings, TVAverageRating;
     private ProgressBar PB5Star, PB4Star, PB3Star, PB2Star, PB1Star;
     private RecyclerView RVReviews;
@@ -61,6 +64,7 @@ public class GreenSpaceReviewsActivity extends AppCompatActivity {
                     System.out.println("Error retrieving green space reviews: " + e.getMessage());
                 }
             });
+            reviews = reviewsList.getReviews();
         }
     }
     private void initializeWidgets() {
@@ -86,8 +90,8 @@ public class GreenSpaceReviewsActivity extends AppCompatActivity {
                 System.out.println("Error retrieving green space name: " + e.getMessage());
             }
         });
-        TVTotalRatings.setText(String.format("Average (%d)", getNoOfRatings()));
-        if (getNoOfRatings() > 0) TVAverageRating.setText(String.format("%.1f", calcAverageRating()));
+        TVTotalRatings.setText(String.format("Average (%d)", getNoOfRatings(reviews)));
+        if (getNoOfRatings(reviews) > 0) TVAverageRating.setText(String.format("%.1f", calcAverageRating(reviews)));
         float[] ratingsCount = countRatingPercentages();
         PB5Star.setProgress(Math.round(ratingsCount[4]));
         PB4Star.setProgress(Math.round(ratingsCount[3]));
@@ -132,19 +136,20 @@ public class GreenSpaceReviewsActivity extends AppCompatActivity {
                     callback.onFailure(e);
                 });
     }
-    private int getNoOfRatings() {
+    private static int getNoOfRatings(ArrayList<Review> reviews) {
         int totalRatings = 0;
-        for (Review review: reviewsList.getReviews()) {
+        for (Review review: reviews) {
             if (review.getRating() != -1.0f) {
                 totalRatings++;
             }
         }
         return totalRatings;
     }
-    private float calcAverageRating() {
-        float n = getNoOfRatings();
+    public static float calcAverageRating(ArrayList<Review> reviews) {
+        float n = getNoOfRatings(reviews);
+        if (n == 0) return -1;
         float totalRating = 0;
-        for (Review review: reviewsList.getReviews()) {
+        for (Review review: reviews) {
             if (review.getRating() != -1.0f) {
                 totalRating += review.getRating();
             }
@@ -153,7 +158,7 @@ public class GreenSpaceReviewsActivity extends AppCompatActivity {
     }
     private float[] countRatingPercentages() {
         float[] ratingPercentages = new float[5];
-        float totalRatings = getNoOfRatings();
+        float totalRatings = getNoOfRatings(reviews);
         if (totalRatings == 0) return ratingPercentages;
         for (Review review: reviewsList.getReviews()) {
             if (review.getRating() >= 0 && review.getRating() <= 1){

@@ -70,7 +70,8 @@ public class GreenSpacesAdapter extends RecyclerView.Adapter<GreenSpacesAdapter.
             }
             TVGreenSpaceName.setText(space.getName());
             TVApproxDist.setText(String.format("Approx. %.1f km", space.getApproxDistance()));
-            TVRating.setText(String.valueOf(space.getRating()));
+            System.out.println("Current: " + space.getRating());
+            TVRating.setText(String.format("%.1f", space.getRating()));
             CVGreenSpace.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

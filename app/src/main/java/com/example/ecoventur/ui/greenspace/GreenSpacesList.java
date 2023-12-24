@@ -35,6 +35,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class GreenSpacesList {
     private Location currentLocation;
@@ -113,25 +114,42 @@ public class GreenSpacesList {
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
+                        AtomicInteger count = new AtomicInteger(task.getResult().size());
                         for (QueryDocumentSnapshot document: task.getResult()) {
-                            GreenSpace space = new GreenSpace();
-                            space.setPlaceId(document.getId());
-                            if (document.contains("imageLink")) space.setImageLink(document.getString("imageLink"));
-                            if (document.contains("name")) space.setName(document.getString("name"));
-                            GeoPoint geoPoint = document.getGeoPoint("latLng");
-                            if (geoPoint != null){
-                                space.setLocation(new LatLng(geoPoint.getLatitude(), geoPoint.getLongitude()));
-                                space.setMapsLatLng(new com.google.android.gms.maps.model.LatLng(geoPoint.getLatitude(), geoPoint.getLongitude()));
-                            }
-                            space.setApproxDistance(HaversineFormula(currentLatLng, space.getLocation()));
-                            if (document.contains("openingHours")) space.setOpeningHours(document.getString("openingHours"));
-                            if (document.contains("address")) space.setAddress(document.getString("address"));
-                            if (document.contains("entryFee")) space.setEntryFee(document.getDouble("entryFee"));
-                            if (document.contains("link")) space.setMapsURL(document.getString("link"));
-                            greenSpaces.add(space);
+                            new ReviewsList(document.getId(), new Callback() {
+                                @Override
+                                public void onDataLoaded(Object object) {
+                                    GreenSpace space = new GreenSpace();
+                                    space.setPlaceId(document.getId());
+                                    if (document.contains("imageLink")) space.setImageLink(document.getString("imageLink"));
+                                    if (document.contains("name")) space.setName(document.getString("name"));
+                                    GeoPoint geoPoint = document.getGeoPoint("latLng");
+                                    if (geoPoint != null){
+                                        space.setLocation(new LatLng(geoPoint.getLatitude(), geoPoint.getLongitude()));
+                                        space.setMapsLatLng(new com.google.android.gms.maps.model.LatLng(geoPoint.getLatitude(), geoPoint.getLongitude()));
+                                    }
+                                    space.setApproxDistance(HaversineFormula(currentLatLng, space.getLocation()));
+                                    if (document.contains("openingHours")) space.setOpeningHours(document.getString("openingHours"));
+                                    space.setRating(GreenSpaceReviewsActivity.calcAverageRating((ArrayList<Review>) object));
+                                    if (document.contains("address")) space.setAddress(document.getString("address"));
+                                    if (document.contains("entryFee")) space.setEntryFee(document.getDouble("entryFee"));
+                                    if (document.contains("link")) space.setMapsURL(document.getString("link"));
+                                    greenSpaces.add(space);
+                                    if (count.decrementAndGet() == 0) {
+                                        sortPlacesByDistance();
+                                        callback.onDataLoaded(greenSpaces);
+                                    }
+                                }
+                                @Override
+                                public void onFailure(Exception e) {
+                                    System.out.println("Error retrieving green space rating: " + e.getMessage());
+                                    if (count.decrementAndGet() == 0) {
+                                        sortPlacesByDistance();
+                                        callback.onDataLoaded(greenSpaces);
+                                    }
+                                }
+                            });
                         }
-                        sortPlacesByDistance();
-                        callback.onDataLoaded(greenSpaces);
                     }
                     else {
                         callback.onFailure(task.getException());

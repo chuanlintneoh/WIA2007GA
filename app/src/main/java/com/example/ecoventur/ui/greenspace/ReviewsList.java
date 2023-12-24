@@ -44,7 +44,10 @@ public class ReviewsList {
                         }
                         if (documentSnapshot.contains("description")) review.setDescription(documentSnapshot.getString("description"));
                         if (documentSnapshot.contains("imageLink")) review.setImageLink(documentSnapshot.getString("imageLink"));
-                        if (documentSnapshot.contains("rating")) review.setRating(documentSnapshot.getLong("rating").floatValue());
+                        if (documentSnapshot.contains("rating")) {
+                            double rating = documentSnapshot.getDouble("rating");
+                            review.setRating((float) rating);
+                        }
                         if (documentSnapshot.contains("time")) {
                             Timestamp time = documentSnapshot.getTimestamp("time");
                             if (time != null) {

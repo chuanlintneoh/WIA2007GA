@@ -180,5 +180,16 @@ public class WriteReviewDialog {
                 .addOnFailureListener(e -> {
                     Toast.makeText(activity, "Review submission failed!" + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
+
+        ecoCoinsManager.addEcoCoins(UID, 10, new Callback() {
+            @Override
+            public void onDataLoaded(Object object) {
+                Toast.makeText(activity, "You have earned 10 ecoCoins! Current balance: " + (int) object, Toast.LENGTH_SHORT).show();
+            }
+            @Override
+            public void onFailure(Exception e) {
+                System.out.println("Error adding EcoCoins to user's profile: " + e);
+            }
+        });
     }
 }

@@ -13,6 +13,7 @@ import android.text.style.ClickableSpan;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
@@ -182,6 +183,16 @@ public class GreenEventDetailsActivity extends AppCompatActivity {
                     public void onDataLoaded(Object object) {
                         CVSaveEventToWishlist.setVisibility(View.GONE);
                         CVEventSavedToWishlist.setVisibility(View.VISIBLE);
+                        ecoCoinsManager.addEcoCoins(UID, 10, new Callback() {
+                            @Override
+                            public void onDataLoaded(Object object) {
+                                Toast.makeText(getApplicationContext(), "10 EcoCoins added! Current balance: " + (int) object, Toast.LENGTH_SHORT).show();
+                            }
+                            @Override
+                            public void onFailure(Exception e) {
+                                System.out.println("Error adding 10 EcoCoins to user: " + e);
+                            }
+                        });
                         if (calculateScheduledTime(event.getDate(), 7) != -1) {
                             notificationScheduler.scheduleNotification(
                                     getApplicationContext(),
@@ -225,6 +236,16 @@ public class GreenEventDetailsActivity extends AppCompatActivity {
                     public void onDataLoaded(Object object) {
                         CVSaveEventToWishlist.setVisibility(View.VISIBLE);
                         CVEventSavedToWishlist.setVisibility(View.GONE);
+                        ecoCoinsManager.deductEcoCoins(UID, 10, new Callback() {
+                            @Override
+                            public void onDataLoaded(Object object) {
+                                Toast.makeText(getApplicationContext(), "10 EcoCoins deducted! Current balance: " + (int) object, Toast.LENGTH_SHORT).show();
+                            }
+                            @Override
+                            public void onFailure(Exception e) {
+                                System.out.println("Error deducting 10 EcoCoins from user: " + e);
+                            }
+                        });
                         notificationScheduler.cancelScheduledNotification(getApplicationContext(), event.getEventId().hashCode() * 10 + 7);
                         notificationScheduler.cancelScheduledNotification(getApplicationContext(), event.getEventId().hashCode() * 10 + 3);
                         notificationScheduler.cancelScheduledNotification(getApplicationContext(), event.getEventId().hashCode() * 10);

@@ -248,21 +248,6 @@
                     android:gravity="right"
                     android:layout_marginTop="20dp"
                     android:padding="10dp">
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="center"
-                        android:scaleType="fitCenter"
-                        android:adjustViewBounds="true"
-                        android:src="@drawable/ecocoin"
-                        android:layout_marginRight="4dp"/>
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:gravity="center_vertical"
-                        android:fontFamily="@font/alata"
-                        android:text="10"
-                        android:layout_marginRight="10dp"/>
                     <androidx.cardview.widget.CardView
                         android:id="@+id/CVShare"
                         android:layout_width="30dp"

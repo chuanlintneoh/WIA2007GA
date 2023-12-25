@@ -3,6 +3,7 @@ package com.example.ecoventur.ui.greenspace;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
@@ -28,7 +29,10 @@ import com.google.firebase.storage.UploadTask;
 
 import com.example.ecoventur.R;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
@@ -124,8 +128,17 @@ public class WriteReviewDialog {
         btnSubmit = dialogView.findViewById(R.id.btnSubmit);
     }
     public void handleReviewImage(Intent data) {
-        if (data != null && data.getData() != null) {
+        if (data != null) {
             reviewImageUri = data.getData();
+            if (reviewImageUri == null) {
+                Bitmap capturedImage = (Bitmap) data.getExtras().get("data");
+                String capturedImageFileName = "JPEG_" + new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date()) + "_";
+                reviewImageUri = Uri.parse(MediaStore.Images.Media.insertImage(activity.getContentResolver(), capturedImage, capturedImageFileName, null));
+                if (reviewImageUri == null) {
+                    Toast.makeText(activity, "Failed to save captured image! Try selecting photo instead.", Toast.LENGTH_LONG).show();
+                    return;
+                }
+            }
             Glide.with(dialogView).load(reviewImageUri).into(IVReviewImage);
         }
     }

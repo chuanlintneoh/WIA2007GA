@@ -13,6 +13,7 @@ import android.widget.Toast;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
+import com.example.ecoventur.MainActivity;
 import com.example.ecoventur.R;
 
 public class notificationScheduler {
@@ -84,6 +85,11 @@ public class notificationScheduler {
         notificationManager.cancel(notificationId);
     }
     public static void scheduleNotification(Context context, String textTitle, String textContent, int notificationId, long scheduledTime) {
+        Intent intentOnTap = new Intent(context, MainActivity.class);
+        intentOnTap.putExtra("openFragment", "greenSpaceDiscovery");
+        intentOnTap.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        PendingIntent pendingIntentOnTap = PendingIntent.getActivity(context, 0, intentOnTap, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_launcher_foreground)// insert app icon here
                 .setContentTitle(textTitle)
@@ -91,7 +97,7 @@ public class notificationScheduler {
                 .setStyle(new NotificationCompat.BigTextStyle()
                         .bigText(textContent))
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-//                .setContentIntent() // on notification tap
+                .setContentIntent(pendingIntentOnTap)
                 .setAutoCancel(true);
 
         Intent notificationIntent = new Intent(context, notificationReceiver.class);

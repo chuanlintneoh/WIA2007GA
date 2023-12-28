@@ -40,6 +40,7 @@ public class WriteReviewDialog {
     private Activity activity;
     private ActivityResultLauncher<Intent> ARL;
     private String placeId;
+    private String placeName;
     private String UID;
     private View dialogView;
     private ImageView IVReviewImage;
@@ -56,11 +57,12 @@ public class WriteReviewDialog {
         void onSubmitClicked();
     }
     private WriteReviewDialogListener listener;
-    public WriteReviewDialog (Activity activity, ActivityResultLauncher<Intent> ARL, WriteReviewDialogListener listener, String placeId, String UID) {
+    public WriteReviewDialog (Activity activity, ActivityResultLauncher<Intent> ARL, WriteReviewDialogListener listener, String placeId, String placeName, String UID) {
         this.activity = activity;
         this.ARL = ARL;
         this.listener = listener;
         this.placeId = placeId;
+        this.placeName = placeName;
         this.UID = UID;
         show();
     }
@@ -194,7 +196,7 @@ public class WriteReviewDialog {
                     Toast.makeText(activity, "Review submission failed!" + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
 
-        ecoCoinsManager.addEcoCoins(UID, 10, new Callback() {
+        ecoCoinsManager.addEcoCoins(UID, String.format("Wrote a review on %s", placeName), 10, new Callback() {
             @Override
             public void onDataLoaded(Object object) {
                 Toast.makeText(activity, "You have earned 10 ecoCoins! Current balance: " + (int) object, Toast.LENGTH_SHORT).show();

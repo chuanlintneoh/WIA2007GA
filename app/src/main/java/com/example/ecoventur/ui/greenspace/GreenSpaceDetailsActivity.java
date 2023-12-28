@@ -166,7 +166,7 @@ public class GreenSpaceDetailsActivity extends AppCompatActivity implements OnMa
                             public void onSubmitClicked() {
                             }
                         },
-                        placeId, UID);
+                        placeId, space.getName(), UID);
             }
         });
         CVShare.setOnClickListener(new View.OnClickListener() {

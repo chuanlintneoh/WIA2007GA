@@ -183,7 +183,7 @@ public class GreenEventDetailsActivity extends AppCompatActivity {
                     public void onDataLoaded(Object object) {
                         CVSaveEventToWishlist.setVisibility(View.GONE);
                         CVEventSavedToWishlist.setVisibility(View.VISIBLE);
-                        ecoCoinsManager.addEcoCoins(UID, 10, new Callback() {
+                        ecoCoinsManager.addEcoCoins(UID, String.format("Saved %s to wishlist", event.getName()), 10, new Callback() {
                             @Override
                             public void onDataLoaded(Object object) {
                                 Toast.makeText(getApplicationContext(), "10 EcoCoins added! Current balance: " + (int) object, Toast.LENGTH_SHORT).show();
@@ -236,7 +236,7 @@ public class GreenEventDetailsActivity extends AppCompatActivity {
                     public void onDataLoaded(Object object) {
                         CVSaveEventToWishlist.setVisibility(View.VISIBLE);
                         CVEventSavedToWishlist.setVisibility(View.GONE);
-                        ecoCoinsManager.deductEcoCoins(UID, 10, new Callback() {
+                        ecoCoinsManager.deductEcoCoins(UID, String.format("Removed %s from wishlist", event.getName()), 10, new Callback() {
                             @Override
                             public void onDataLoaded(Object object) {
                                 Toast.makeText(getApplicationContext(), "10 EcoCoins deducted! Current balance: " + (int) object, Toast.LENGTH_SHORT).show();

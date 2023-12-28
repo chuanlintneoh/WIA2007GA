@@ -25,6 +25,7 @@ import java.util.ArrayList;
 
 public class GreenSpaceReviewsActivity extends AppCompatActivity {
     private String placeId;
+    private String placeName;
     private String UID;
     private ReviewsList reviewsList;
     private ArrayList<Review> reviews;
@@ -83,7 +84,8 @@ public class GreenSpaceReviewsActivity extends AppCompatActivity {
         getSpaceName(new Callback() {
             @Override
             public void onDataLoaded(Object object) {
-                TVSpaceName.setText((String) object);
+                placeName = (String) object;
+                TVSpaceName.setText(placeName);
             }
             @Override
             public void onFailure(Exception e) {
@@ -115,7 +117,7 @@ public class GreenSpaceReviewsActivity extends AppCompatActivity {
                             public void onSubmitClicked() {
                             }
                         },
-                        placeId, UID);
+                        placeId, placeName, UID);
             }
         });
     }

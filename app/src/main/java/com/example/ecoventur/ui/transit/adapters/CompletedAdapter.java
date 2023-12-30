@@ -1,7 +1,6 @@
 package com.example.ecoventur.ui.transit.adapters;
 
 import android.content.Context;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.ecoventur.R;
-import com.example.ecoventur.ui.transit.model.AllChallenges;
 import com.example.ecoventur.ui.transit.model.Completed;
 
 import java.text.SimpleDateFormat;
@@ -64,47 +62,6 @@ public class CompletedAdapter extends RecyclerView.Adapter<CompletedAdapter.View
             String tag = completed.getTags().get(i);
 
             if (isNumeric(tag)) {
-//                // If the tag is a number, add "50" and Ecocoins image in a horizontal layout
-//                LinearLayout horizontalLayout = new LinearLayout(context);
-//                horizontalLayout.setLayoutParams(new LinearLayout.LayoutParams(
-//                        LinearLayout.LayoutParams.WRAP_CONTENT,
-//                        LinearLayout.LayoutParams.WRAP_CONTENT
-//                ));
-//                horizontalLayout.setOrientation(LinearLayout.HORIZONTAL);
-//                horizontalLayout.setBackgroundResource(R.drawable.tag_background);
-//
-//                // Add "50" TextView
-//                TextView numberTextView = new TextView(context);
-//                numberTextView.setText(tag);
-//                numberTextView.setTextSize(10);
-//                int padding = 8;
-//                numberTextView.setPadding(padding, padding, padding, padding);
-//                numberTextView.setGravity(Gravity.CENTER_VERTICAL);
-//
-//                // Add "50" TextView to the horizontal layout
-//                horizontalLayout.addView(numberTextView);
-//
-//                // Add Ecocoins image
-//                ImageView ecocoinsImageView = new ImageView(context);
-//                ecocoinsImageView.setImageResource(R.drawable.ecocoin);
-//                int imageSize = 30; // Adjust the size as needed
-//                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-//                        imageSize,
-//                        imageSize
-//                );
-//                layoutParams.gravity = Gravity.CENTER_VERTICAL; // Center the image vertically
-//                ecocoinsImageView.setLayoutParams(layoutParams);
-//
-//                // Add Ecocoins image to the horizontal layout
-//                horizontalLayout.addView(ecocoinsImageView);
-//
-//                // Add margin to the right of each tag
-//                int marginRight = 8;
-//                ((LinearLayout.LayoutParams) ecocoinsImageView.getLayoutParams()).setMargins(0, 0, marginRight, 0);
-//
-//                // Add the horizontal layout to the tags layout
-//                holder.tagsLayout.addView(horizontalLayout);
-
                 //Do nothing
             } else {
                 // If the tag is not a number, add it as a regular TextView
@@ -139,7 +96,6 @@ public class CompletedAdapter extends RecyclerView.Adapter<CompletedAdapter.View
         TextView titleTextView;
         TextView datesTextView;
         LinearLayout tagsLayout;
-//        ImageView ecocoinsImageView;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -148,7 +104,6 @@ public class CompletedAdapter extends RecyclerView.Adapter<CompletedAdapter.View
             titleTextView = itemView.findViewById(R.id.challenge_title);
             datesTextView = itemView.findViewById(R.id.challenge_dates);
             tagsLayout = itemView.findViewById(R.id.tags);
-//            ecocoinsImageView = itemView.findViewById(R.id.ecocoins);
         }
     }
 

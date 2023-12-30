@@ -1,9 +1,8 @@
 package com.example.ecoventur.ui.transit.model;
 
 import java.util.Date;
-import com.google.firebase.firestore.DocumentReference;
 
-public class Challenging {
+public class Challenging{
 
     String imageUrl;
     String title;

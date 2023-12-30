@@ -1,38 +1,40 @@
 package com.example.ecoventur.ui.transit;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.ecoventur.R;
 
-import com.example.ecoventur.databinding.FragmentTransitBinding;
 import com.example.ecoventur.ui.transit.adapters.AllChallengesAdapter;
 import com.example.ecoventur.ui.transit.adapters.ChallengingAdapter;
 import com.example.ecoventur.ui.transit.adapters.CompletedAdapter;
+import com.example.ecoventur.ui.transit.adapters.OnChallengeItemClickListener;
 import com.example.ecoventur.ui.transit.model.AllChallenges;
 import com.example.ecoventur.ui.transit.model.Challenging;
 import com.example.ecoventur.ui.transit.model.Completed;
-import com.google.firebase.firestore.DocumentChange;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.DocumentReference;
 
 import java.util.ArrayList;
-import com.google.firebase.firestore.EventListener;
 
 import java.util.Date;
 import java.util.List;
@@ -40,12 +42,13 @@ import java.util.Collections;
 
 public class TransitFragment extends Fragment {
 
-    private FragmentTransitBinding binding;
     FirebaseFirestore db;
     String userID;
 
+    ProgressDialog progressDialog;
+
     //All Challenges
-    List <AllChallenges> allChallengesList;
+    static List <AllChallenges> allChallengesList;
     private RecyclerView allChallengesRecyclerView;
     private AllChallengesAdapter allChallengesAdapter;
 
@@ -55,7 +58,7 @@ public class TransitFragment extends Fragment {
     private ChallengingAdapter allChallengingAdapter;
 
     //Completed
-    List<Completed> allCompletedList;
+    static List<Completed> allCompletedList;
     RecyclerView allCompletedRecyclerView;
     CompletedAdapter allCompletedAdapter;
 
@@ -63,10 +66,35 @@ public class TransitFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_transit, container, false);
 
+        // Find the app bar (assuming it's present in your activity)
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        ActionBar actionBar = activity.getSupportActionBar();
+
+        if (actionBar != null) {
+            // Set custom layout for the action bar
+            actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+            actionBar.setCustomView(R.layout.toolbar_custom);
+
+            // Find the ImageView in your custom layout
+            ImageView passportIcon = actionBar.getCustomView().findViewById(R.id.passport_icon);
+
+            // Set click listener or perform any other actions as needed
+            passportIcon.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // Handle icon click
+                    showPassportDialog(userID);
+                }
+            });
+        }
+
+        progressDialog = new ProgressDialog(getContext());
+        progressDialog.setMessage("Loading...");
+        progressDialog.setCancelable(false);
+
         userID = "uaPJZguefgcNGyl0Ig2sy1Yq6tu1";
 
         db = FirebaseFirestore.getInstance();
-
 
 
         //Initialize RecyclerView and Set Layout Manager for AllChallenges
@@ -74,12 +102,31 @@ public class TransitFragment extends Fragment {
         allChallengesRecyclerView = root.findViewById(R.id.all_challenges);
         allChallengesList = new ArrayList<>();
         allChallengesAdapter = new AllChallengesAdapter(getContext(),allChallengesList);
+
+        // Set the click listener for the ChallengeAdapter
+        allChallengesAdapter.setOnChallengeItemClickListener(new OnChallengeItemClickListener() {
+            @Override
+            public void onChallengeItemClick(int position) {
+                // Handle item click, e.g., navigate to ChallengeDetailScreen
+                // You can access the clicked challenge using position and challengeAdapter.getItem(position)
+            }
+        });
         allChallengesRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         allChallengesRecyclerView.setAdapter(allChallengesAdapter);
 
+        //Initialize RecyclerView and Set Layout Manager for All Challenging
+        //Initialize adpater and set it to RecyclerView
         allChallengingRecyclerView = root.findViewById(R.id.all_challenging);
         allChallengingList = new ArrayList<>();
         allChallengingAdapter = new ChallengingAdapter(getContext(), allChallengingList);
+        // Set the click listener for the ChallengingAdapter
+        allChallengingAdapter.setOnChallengeItemClickListener(new OnChallengeItemClickListener() {
+            @Override
+            public void onChallengeItemClick(int position) {
+                // Handle item click, e.g., navigate to ChallengeDetailScreen
+                // You can access the clicked challenge using position and challengeAdapter.getItem(position)
+            }
+        });
         allChallengingRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         allChallengingRecyclerView.setAdapter(allChallengingAdapter);
         allChallengingAdapter.setHorizontalLayoutManager(allChallengingRecyclerView);
@@ -94,6 +141,35 @@ public class TransitFragment extends Fragment {
         fetchAllChallenging(userID);
         fetchAllCompleted(userID);
 
+
+        // Inside your onCreateView method in TransitFragment.java
+        TextView viewAllChallengesTextView = root.findViewById(R.id.view_all_challenges);
+
+        viewAllChallengesTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("Transit Fragment", "View All Challenges is clicked");
+                // Handle the "View all challenges" click event
+                // For example, replace the current fragment with a new fragment
+                // Use the NavController to navigate to the fragment
+                Navigation.findNavController(v).navigate(R.id.action_TransitFragment_to_ViewAllChallenge);
+            }
+        });
+
+        // Inside your onCreateView method in TransitFragment.java
+        TextView viewAllCompletedTextView = root.findViewById(R.id.view_all_completed);
+
+        viewAllCompletedTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("Transit Fragment", "View All Challenges is clicked");
+                // Handle the "View all challenges" click event
+                // You can perform a fragment transaction here to show all challenges
+                // For example, replace the current fragment with a new fragment
+                // Use the NavController to navigate to the fragment
+                Navigation.findNavController(v).navigate(R.id.action_TransitFragment_to_ViewAllCompleted);
+            }
+        });
 
         return root;
     }
@@ -128,6 +204,7 @@ public class TransitFragment extends Fragment {
                                         Log.d("FirebaseFetch (All Challenges)", "Document ID (All Challenges): " + document.getId());
 
                                         AllChallenges allChallenges = document.toObject(AllChallenges.class);
+                                        allChallenges.setId(document.getId());
                                         allChallengesList.add(allChallenges);
                                         recordCount++;
                                     }
@@ -141,6 +218,7 @@ public class TransitFragment extends Fragment {
                             String message = recordCount + " records in challenges collection fetched from Firebase";
                             Log.d("FirebaseFetch (All Challenges)", message);
 
+
                         } catch (Exception e) {
                             Log.e("FirebaseFetch (All Challenges)", "Exception while processing documents: " + e.getMessage());
                         }
@@ -153,12 +231,17 @@ public class TransitFragment extends Fragment {
     }
 
     private void fetchAllChallenging(String userID) {
+
+        //Show the Progress Dialog when start fetching the challenges from Firebase
+        progressDialog.show();
+
         Log.d("FirebaseFetch (Challenging)", "Fetching challenging items from Firestore for user: " + userID);
 
         db.collection("users").document(userID).collection("challenging")
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
+
                         try {
                             List<DocumentSnapshot> documents = task.getResult().getDocuments();
                             int recordCount = documents.size(); // Get the number of records
@@ -190,6 +273,7 @@ public class TransitFragment extends Fragment {
 
         challengingIDRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
+
                 DocumentSnapshot document = task.getResult();
                 if (document.exists()) {
                     // DocumentSnapshot data extraction
@@ -249,6 +333,7 @@ public class TransitFragment extends Fragment {
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
+                        progressDialog.dismiss(); // Dismiss progress dialog
                         try {
                             List<DocumentSnapshot> documents = task.getResult().getDocuments();
                             int recordCount = documents.size(); // Get the number of records
@@ -277,6 +362,7 @@ public class TransitFragment extends Fragment {
 
         challengingIDRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
+
                 DocumentSnapshot document = task.getResult();
                 if (document.exists()) {
                     // DocumentSnapshot data extraction
@@ -342,6 +428,42 @@ public class TransitFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        binding = null;
+
+        // Reset the custom view when the fragment is destroyed
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        ActionBar actionBar = activity.getSupportActionBar();
+
+        if (actionBar != null) {
+            actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_TITLE);
+            actionBar.setCustomView(null);
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        // Update the bottom navigation bar
+        updateBottomNavigationBar();
+    }
+
+    private void updateBottomNavigationBar() {
+        // Assuming you have a reference to the BottomNavigationView
+        BottomNavigationView bottomNavigationView = getActivity().findViewById(R.id.nav_view);
+
+        // Perform any update logic for the BottomNavigationView
+        // For example, you can select the correct menu item based on your requirements
+        bottomNavigationView.setSelectedItemId(R.id.navigation_transit);
+    }
+
+    protected void showPassportDialog(String userID) {
+        DigitalPassportFragment passportFragment = new DigitalPassportFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString("userID", userID);
+        passportFragment.setArguments(bundle);
+
+        passportFragment.setStyle(DialogFragment.STYLE_NORMAL, R.style.DialogTheme);
+
+        passportFragment.show(getParentFragmentManager(), "passport_dialog");
     }
 }

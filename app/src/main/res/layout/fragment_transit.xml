@@ -1,51 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.transit.TransitFragment"
-    android:fillViewport="true">
+    android:id="@+id/fragment_transit_container"
+    android:orientation="vertical">
 
-    <RelativeLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#8AF8BC"
-        >
+        android:fillViewport="true">
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="match_parent"
+            android:background="#8AF8BC"
+            >
 
-            <!-- Challenging -->
-            <RelativeLayout
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="3.5"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:background="#8AF8BC"> <!-- Set background color for the container -->
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/challenging_text"
+                <!-- Challenging -->
+                <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Challenging"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:textColor="#000000"/> <!-- Set text color to black -->
+                    android:layout_height="0dp"
+                    android:layout_weight="3.5"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:background="#8AF8BC"> <!-- Set background color for the container -->
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/all_challenging"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/challenging_text"
-                    android:layout_margin="9dp"
-                    android:background="#8AF8BC"/> <!-- Set background color for the RecyclerView -->
-            </RelativeLayout>
+                    <TextView
+                        android:id="@+id/challenging_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Challenging"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="#000000"/> <!-- Set text color to black -->
 
-            <!-- Explore Challenges -->
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/all_challenging"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/challenging_text"
+                        android:layout_marginStart="9dp"
+                        android:layout_marginTop="9dp"
+                        android:layout_marginEnd="9dp"
+                        android:layout_marginBottom="9dp"
+                        android:background="#8AF8BC" /> <!-- Set background color for the RecyclerView -->
+                </RelativeLayout>
+
+                <!-- Explore Challenges -->
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
@@ -73,16 +83,28 @@
                         android:textSize="16sp"
                         android:textColor="#828282"/>
 
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/all_challenges"
+                    <androidx.cardview.widget.CardView
+                        xmlns:card_view="http://schemas.android.com/apk/res-auto"
                         android:layout_width="match_parent"
-                        android:layout_height="180dp"
-                        android:layout_margin="9dp"
-                        android:background="#8AF8BC"
-                        android:orientation="vertical"
+                        android:layout_height="wrap_content"
                         android:layout_below="@id/explore_the_challenges_text"
-                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+                        android:layout_marginStart="9dp"
+                        android:layout_marginTop="9dp"
+                        android:layout_marginEnd="9dp"
+                        android:layout_marginBottom="9dp"
+                        card_view:cardCornerRadius="8dp"
+                        card_view:cardElevation="4dp">
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/all_challenges"
+                            android:layout_width="match_parent"
+                            android:layout_height="180dp"
+                            android:background="#8AF8BC"
+                            android:orientation="vertical"
+                            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+                    </androidx.cardview.widget.CardView>
+
                 </RelativeLayout>
 
 
@@ -114,20 +136,30 @@
                         android:textSize="16sp"
                         android:textColor="#828282"/>
 
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/all_completed_challenges"
+                    <androidx.cardview.widget.CardView
+                        xmlns:card_view="http://schemas.android.com/apk/res-auto"
                         android:layout_width="match_parent"
-                        android:layout_height="180dp"
+                        android:layout_height="wrap_content"
                         android:layout_below="@id/completed_text"
                         android:layout_marginStart="9dp"
                         android:layout_marginTop="9dp"
                         android:layout_marginEnd="9dp"
                         android:layout_marginBottom="9dp"
-                        android:background="#8AF8BC"
-                        android:orientation="vertical"
-                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+                        card_view:cardCornerRadius="8dp"
+                        card_view:cardElevation="4dp">
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/all_completed_challenges"
+                            android:layout_width="match_parent"
+                            android:layout_height="180dp"
+                            android:background="#8AF8BC"
+                            android:orientation="vertical"
+                            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+                    </androidx.cardview.widget.CardView>
+
                 </RelativeLayout>
-        </LinearLayout>
-    </RelativeLayout>
-</ScrollView>
+            </LinearLayout>
+        </RelativeLayout>
+    </ScrollView>
+</LinearLayout>

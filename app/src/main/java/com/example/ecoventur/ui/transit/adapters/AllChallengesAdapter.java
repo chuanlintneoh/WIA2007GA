@@ -1,6 +1,9 @@
 package com.example.ecoventur.ui.transit.adapters;
 
+
 import android.content.Context;
+import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +13,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -18,7 +23,6 @@ import com.example.ecoventur.ui.transit.model.AllChallenges;
 
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -26,7 +30,9 @@ import java.util.Locale;
 public class AllChallengesAdapter extends RecyclerView.Adapter<AllChallengesAdapter.ViewHolder> {
 
     private final Context context;
-    private List<AllChallenges> allChallengesList;
+    private static List<AllChallenges> allChallengesList;
+    private static OnChallengeItemClickListener onChallengeItemClickListener;
+
 
     public AllChallengesAdapter(Context context, List<AllChallenges> allChallengesList) {
         this.context = context;
@@ -133,7 +139,11 @@ public class AllChallengesAdapter extends RecyclerView.Adapter<AllChallengesAdap
         return allChallengesList.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public void setOnChallengeItemClickListener(OnChallengeItemClickListener listener) {
+        this.onChallengeItemClickListener = listener;
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         ImageView imageView;
         TextView titleTextView;
@@ -149,6 +159,28 @@ public class AllChallengesAdapter extends RecyclerView.Adapter<AllChallengesAdap
             datesTextView = itemView.findViewById(R.id.challenge_dates);
             tagsLayout = itemView.findViewById(R.id.tags);
             ecocoinsImageView = itemView.findViewById(R.id.ecocoins);
+
+            // Set click listener for the item view
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            if (onChallengeItemClickListener != null) {
+                int position = getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION) {
+                    onChallengeItemClickListener.onChallengeItemClick(position);
+                }
+
+                // Assuming you have a NavController instance in your Fragment/Activity
+                NavController navController = Navigation.findNavController(view);
+
+                // Use Bundle instead of BundleKt in Java
+                Bundle bundle = new Bundle();
+                bundle.putParcelable("challenge", (Parcelable) allChallengesList.get(position));
+
+                navController.navigate(R.id.action_allChallengesFragment_to_challengeDetailFragment, bundle);
+            }
         }
     }
 
@@ -168,3 +200,4 @@ public class AllChallengesAdapter extends RecyclerView.Adapter<AllChallengesAdap
         }
     }
 }
+

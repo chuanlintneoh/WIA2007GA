@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="10dp"
+    android:layout_margin="5dp"
     app:cardCornerRadius="5dp">
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -107,6 +107,7 @@
                 android:layout_height="0dp"
                 android:layout_weight="4"
                 android:text="Challenge Title"
+                android:textStyle="bold"
                 android:gravity="bottom"
                 android:textSize="18sp"/>
 
@@ -117,7 +118,6 @@
                 android:layout_height="0dp"
                 android:layout_weight="3"
                 android:text="8/1/2024 - 14/1/2024"
-                android:textStyle="bold"
                 android:textSize="16sp" />
 
         </LinearLayout>

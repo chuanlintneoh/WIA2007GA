@@ -3,6 +3,10 @@
     <string name="title_user">Profile Management and User Authentication</string>
     <string name="title_transit">Green Transit</string>
     <string name="title_greenspace">Green Space Discovery</string>
+    <string name="title_greenspace_details">Green Space Details</string>
+    <string name="title_greenspace_reviews">Green Space Reviews</string>
+    <string name="title_green_event_details">Community Green Event Details</string>
     <string name="title_ecoeducation">EcoEducation</string>
     <string name="title_ecorewards">EcoCoins and EcoRewards</string>
+    <string name="API_key">AIzaSyBP0Wf3PmKlYzqMVMgm-bg0cGKLjWu1MxM</string>
 </resources>

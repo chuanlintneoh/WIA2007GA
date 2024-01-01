@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "21562411440",
+    "project_id": "ecoventur-405507",
+    "storage_bucket": "ecoventur-405507.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:21562411440:android:7f1ff2675d18f493e4ee75",
+        "android_client_info": {
+          "package_name": "com.example.ecoventur"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBujc6VDtx_C_g4qRccufNZYoBvdFRxono"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -2,6 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -12,6 +17,24 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EcoVentur"
         tools:targetApi="31">
+<!--        <activity-->
+<!--            android:name=".ui.greenspace.FirebaseEventAdder"-->
+<!--            android:exported="true">-->
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
+
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
+<!--        </activity>-->
+<!--        <activity-->
+<!--            android:name=".ui.greenspace.FirebasePlaceAdder"-->
+<!--            android:exported="true">-->
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
+
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
+<!--        </activity>-->
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -22,6 +45,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".ui.greenspace.GreenEventDetailsActivity"
+            android:label="Green Event Details"/>
+        <activity
+            android:name=".ui.greenspace.GreenSpaceDetailsActivity"
+            android:label="Green Space Details"/>
+        <activity
+            android:name=".ui.greenspace.GreenSpaceReviewsActivity"
+            android:label="Green Space Reviews"/>
+        <receiver android:name=".ui.greenspace.notificationReceiver"/>
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/API_key" />
     </application>
-
 </manifest>

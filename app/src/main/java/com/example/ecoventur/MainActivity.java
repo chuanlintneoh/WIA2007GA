@@ -32,6 +32,14 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
+
+//        // redirect to green space fragment when user clicks on notification
+//        if (getIntent().getExtras() != null) {
+//            String openFragment = getIntent().getStringExtra("openFragment");
+//            if (openFragment != null && openFragment.equals("greenSpaceDiscovery")) {
+//                navController.navigate(R.id.navigation_greenspace);
+//            }
+//        }
     }
 
 }

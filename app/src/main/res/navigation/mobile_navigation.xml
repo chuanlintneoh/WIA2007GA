@@ -34,4 +34,59 @@
         android:name="com.example.ecoventur.ui.ecorewards.EcoRewardsFragment"
         android:label="@string/title_ecorewards"
         tools:layout="@layout/fragment_ecorewards" />
+
+    <fragment
+        android:id="@+id/challengeDetailFragment"
+        android:name="com.example.ecoventur.ui.transit.ChallengeDetail"
+        android:label="Challenge Detail"
+        tools:layout="@layout/challenge_details">
+    </fragment>
+
+    <fragment
+        android:id="@+id/submitChallengeDetailFragment"
+        android:name="com.example.ecoventur.ui.transit.SubmitChallengeDetail"
+        android:label="Submit Challenge"
+        tools:layout="@layout/submit_challenge_details">
+    </fragment>
+
+    <fragment
+        android:id="@+id/submissionForm"
+        android:name="com.example.ecoventur.ui.transit.SubmissionFormFragment"
+        android:label="Submission Form"
+        tools:layout="@layout/submission_form">
+    </fragment>
+
+    <fragment
+        android:id="@+id/ViewAllChallenges"
+        android:name="com.example.ecoventur.ui.transit.ViewAllChallengesFragment"
+        android:label="All Challenge"
+        tools:layout="@layout/fragment_view_all_challenges">
+    </fragment>
+
+    <fragment
+        android:id="@+id/ViewAllCompleted"
+        android:name="com.example.ecoventur.ui.transit.ViewAllCompletedFragment"
+        android:label="All Completed"
+        tools:layout="@layout/fragment_view_all_completed">
+    </fragment>
+
+    <action
+        android:id="@+id/action_allChallengesFragment_to_challengeDetailFragment"
+        app:destination="@id/challengeDetailFragment" />
+
+    <action
+        android:id="@+id/action_challengingFragment_to_submitChallengeDetailFragment"
+        app:destination="@id/submitChallengeDetailFragment" />
+
+    <action
+        android:id="@+id/action_submitChallengingFragment_to_submissionForm"
+        app:destination="@id/submissionForm" />
+
+    <action
+        android:id="@+id/action_TransitFragment_to_ViewAllChallenge"
+        app:destination="@id/ViewAllChallenges" />
+
+    <action
+        android:id="@+id/action_TransitFragment_to_ViewAllCompleted"
+        app:destination="@id/ViewAllCompleted" />
 </navigation>

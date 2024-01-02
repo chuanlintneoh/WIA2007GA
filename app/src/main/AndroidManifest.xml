@@ -2,10 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:allowBackup="true"
@@ -17,28 +17,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EcoVentur"
         tools:targetApi="31">
-<!--        <activity-->
-<!--            android:name=".ui.greenspace.FirebaseEventAdder"-->
-<!--            android:exported="true">-->
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.MAIN" />-->
 
-<!--                <category android:name="android.intent.category.LAUNCHER" />-->
-<!--            </intent-filter>-->
-<!--        </activity>-->
-<!--        <activity-->
-<!--            android:name=".ui.greenspace.FirebasePlaceAdder"-->
-<!--            android:exported="true">-->
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.MAIN" />-->
-
-<!--                <category android:name="android.intent.category.LAUNCHER" />-->
-<!--            </intent-filter>-->
-<!--        </activity>-->
         <activity
             android:name=".MainActivity"
+            android:exported="true" />
+
+        <activity
+            android:name=".ui.user.LandingPageActivity"
             android:exported="true"
-            android:label="@string/app_name">
+            android:label="@string/title_landing">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -46,17 +33,33 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.greenspace.GreenEventDetailsActivity"
-            android:label="Green Event Details"/>
+            android:name=".ui.user.LoginPageActivity"
+            android:label="@string/title_login"/>
+        <activity
+            android:name=".ui.user.RegisterPageActivity"
+            android:label="@string/title_register"/>
+        <activity
+            android:name=".ui.user.ForgotPasswordPageActivity"
+            android:label="@string/title_forgot_password"/>
+        <activity
+            android:name=".ui.user.EditProfilePictureActivity"
+            android:label="@string/title_edit_profile_picture"/>
+
         <activity
             android:name=".ui.greenspace.GreenSpaceDetailsActivity"
-            android:label="Green Space Details"/>
+            android:label="@string/title_greenspace_details"/>
         <activity
             android:name=".ui.greenspace.GreenSpaceReviewsActivity"
-            android:label="Green Space Reviews"/>
-        <receiver android:name=".ui.greenspace.notificationReceiver"/>
+            android:label="@string/title_greenspace_reviews"/>
+        <activity
+            android:name=".ui.greenspace.GreenEventDetailsActivity"
+            android:label="@string/title_green_event_details"/>
+
+        <receiver android:name=".ui.greenspace.notificationReceiver" />
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/API_key" />
     </application>
+
 </manifest>

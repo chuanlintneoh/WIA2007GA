@@ -40,6 +40,8 @@ import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.model.PlaceLikelihood;
 import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.IOException;
@@ -49,7 +51,7 @@ import java.util.List;
 
 public class GreenSpaceFragment extends Fragment implements OnMapReadyCallback {
 
-    private String UID = "uaPJZguefgcNGyl0Ig2sy1Yq6tu1";// to be passed from MainActivity during login
+    private String UID;
     private FragmentGreenspaceBinding binding;
     private SearchView searchView;
     private MapView mapView;
@@ -62,6 +64,13 @@ public class GreenSpaceFragment extends Fragment implements OnMapReadyCallback {
 
         binding = FragmentGreenspaceBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            UID = user.getUid();
+        } else {
+            Log.e(TAG, "User is null");
+        }
 
         searchView = root.findViewById(R.id.SVGreenSpace);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {

@@ -1,6 +1,7 @@
 package com.example.ecoventur.ui.transit;
 
 import android.app.Dialog;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -174,6 +175,7 @@ public class DigitalPassportFragment extends DialogFragment  {
                     // Access views in the inflated layout
                     ImageView badgeImage = badgeView.findViewById(R.id.badgeImage);
                     TextView badgeNameTextView = badgeView.findViewById(R.id.badgeName);
+                    badgeNameTextView.setTextColor(Color.GRAY);
 
                     // Set badge details
                     badgeNameTextView.setText(badgeName);

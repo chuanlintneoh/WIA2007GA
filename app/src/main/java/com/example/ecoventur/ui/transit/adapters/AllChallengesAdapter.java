@@ -2,6 +2,7 @@ package com.example.ecoventur.ui.transit.adapters;
 
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.view.Gravity;
@@ -85,6 +86,10 @@ public class AllChallengesAdapter extends RecyclerView.Adapter<AllChallengesAdap
                 TextView numberTextView = new TextView(context);
                 numberTextView.setText(tag);
                 numberTextView.setTextSize(10);
+
+                // Set text color to black
+                numberTextView.setTextColor(Color.BLACK);
+
                 int padding = 8;
                 numberTextView.setPadding(padding, padding, padding, padding);
                 numberTextView.setGravity(Gravity.CENTER_VERTICAL);
@@ -121,6 +126,7 @@ public class AllChallengesAdapter extends RecyclerView.Adapter<AllChallengesAdap
                 ));
                 tagTextView.setText(tag);
                 tagTextView.setTextSize(10);
+                tagTextView.setTextColor(Color.BLACK);
                 tagTextView.setBackgroundResource(R.drawable.tag_background);
                 int padding = 8;
                 tagTextView.setPadding(padding, padding, padding, padding);

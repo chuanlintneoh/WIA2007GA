@@ -1,6 +1,7 @@
 package com.example.ecoventur.ui.transit.adapters;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -72,6 +73,7 @@ public class CompletedAdapter extends RecyclerView.Adapter<CompletedAdapter.View
                 ));
                 tagTextView.setText(tag);
                 tagTextView.setTextSize(10);
+                tagTextView.setTextColor(Color.BLACK);
                 tagTextView.setBackgroundResource(R.drawable.tag_background);
                 int padding = 8;
                 tagTextView.setPadding(padding, padding, padding, padding);

@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -69,6 +70,7 @@ public class TransitFragment extends Fragment {
         // Find the app bar (assuming it's present in your activity)
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         ActionBar actionBar = activity.getSupportActionBar();
+
 
         if (actionBar != null) {
             // Set custom layout for the action bar

@@ -35,6 +35,12 @@ public class e003 extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        AppCompatActivity activity = (AppCompatActivity) requireActivity();
+
+        // Set the title for the Toolbar in the hosting activity
+        if (activity != null && activity.getSupportActionBar() != null) {
+            activity.getSupportActionBar().setTitle("EcoRewards Catalog");
+        }
         return inflater.inflate(R.layout.fragment_e003, container, false);
     }
 

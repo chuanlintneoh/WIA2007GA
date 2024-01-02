@@ -10,15 +10,6 @@
     tools:context=".ui.greenspace.GreenSpaceReviewsActivity">
 
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAlignment="center"
-        android:fontFamily="@font/germania_one"
-        android:text="@string/title_greenspace_reviews"
-        android:textColor="@color/black"
-        android:textSize="24sp"
-        android:layout_marginTop="5dp"/>
-    <TextView
         android:id="@+id/TVSpaceName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

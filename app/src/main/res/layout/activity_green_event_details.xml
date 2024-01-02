@@ -9,16 +9,6 @@
     android:orientation="vertical"
     tools:context=".ui.greenspace.GreenEventDetailsActivity">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAlignment="center"
-        android:fontFamily="@font/germania_one"
-        android:text="@string/title_green_event_details"
-        android:textColor="#000000"
-        android:textSize="24sp"
-        android:layout_marginTop="5dp"/>
-
     <androidx.cardview.widget.CardView
         android:layout_width="wrap_content"
         android:layout_height="240dp"

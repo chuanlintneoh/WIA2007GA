@@ -3,35 +3,76 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/navigation_user">
+    app:startDestination="@id/navigation_user">
 
     <fragment
         android:id="@+id/navigation_user"
         android:name="com.example.ecoventur.ui.user.UserFragment"
-        android:label="@string/title_user"
+        android:label="fragment_user"
         tools:layout="@layout/fragment_user" />
-
     <fragment
         android:id="@+id/navigation_transit"
         android:name="com.example.ecoventur.ui.transit.TransitFragment"
-        android:label="@string/title_transit"
+        android:label="fragment_transit"
         tools:layout="@layout/fragment_transit" />
-
     <fragment
         android:id="@+id/navigation_greenspace"
         android:name="com.example.ecoventur.ui.greenspace.GreenSpaceFragment"
-        android:label="@string/title_greenspace"
+        android:label="fragment_greenspace"
         tools:layout="@layout/fragment_greenspace" />
+    <fragment
+        android:id="@+id/navigation_ecorewards"
+        android:name="com.example.ecoventur.ui.ecorewards.EcoRewardsFragment"
+        android:label="fragment_ecorewards"
+        tools:layout="@layout/fragment_ecorewards" />
 
     <fragment
         android:id="@+id/navigation_ecoeducation"
         android:name="com.example.ecoventur.ui.ecoeducation.EcoEducationFragment"
-        android:label="@string/title_ecoeducation"
+        android:label="fragment_ecoeducation"
         tools:layout="@layout/fragment_ecoeducation" />
-
     <fragment
-        android:id="@+id/navigation_ecorewards"
-        android:name="com.example.ecoventur.ui.ecorewards.EcoRewardsFragment"
-        android:label="@string/title_ecorewards"
-        tools:layout="@layout/fragment_ecorewards" />
+        android:id="@+id/e003"
+        android:name="com.example.ecoventur.ui.ecorewards.e003"
+        android:label="fragment_e003"
+        tools:layout="@layout/fragment_e003" />
+    <fragment
+        android:id="@+id/e001"
+        android:name="com.example.ecoventur.ui.ecorewards.e001"
+        android:label="fragment_e001"
+        tools:layout="@layout/fragment_e001" />
+    <action
+        android:id="@+id/action_e003_to_e001"
+        app:destination="@id/e001"
+        app:popUpTo="@id/e003"
+        app:popUpToInclusive="true" />
+    <fragment
+        android:id="@+id/e00101"
+        android:name="com.example.ecoventur.ui.ecorewards.e00101"
+        android:label="fragment_e00101"
+        tools:layout="@layout/fragment_e00101" >
+        <action
+            android:id="@+id/action_e00101_to_QRDisplay"
+            app:destination="@id/QRDisplay" />
+    </fragment>
+    <action
+        android:id="@+id/action_e001_to_e00101"
+        app:destination="@id/e00101"
+        app:popUpTo="@id/e001"
+        app:popUpToInclusive="true" />
+    <fragment
+        android:id="@+id/QRDisplay"
+        android:name="com.example.ecoventur.ui.ecorewards.QRDisplay"
+        android:label="fragment_qr_display"
+        tools:layout="@layout/fragment_qr_display" />
+    <fragment
+        android:id="@+id/e002"
+        android:name="com.example.ecoventur.ui.ecorewards.e002"
+        android:label="fragment_e002"
+        tools:layout="@layout/fragment_e002" />
+    <fragment
+        android:id="@+id/voucher2"
+        android:name="com.example.ecoventur.ui.ecorewards.Voucher"
+        android:label="fragment_voucher"
+        tools:layout="@layout/fragment_voucher" />
 </navigation>

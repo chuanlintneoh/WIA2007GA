@@ -17,11 +17,21 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EcoVentur"
         tools:targetApi="31">
-
+        <activity
+            android:name=".ui.ecoeducation.activities.ScoreBoardActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.ecoeducation.activities.QuizCategoryActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.ecoeducation.activities.QuizActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.ecoeducation.activities.MoreActivity"
+            android:exported="false" />
         <activity
             android:name=".MainActivity"
             android:exported="true" />
-
         <activity
             android:name=".ui.user.LandingPageActivity"
             android:exported="true"
@@ -34,26 +44,25 @@
         </activity>
         <activity
             android:name=".ui.user.LoginPageActivity"
-            android:label="@string/title_login"/>
+            android:label="@string/title_login" />
         <activity
             android:name=".ui.user.RegisterPageActivity"
-            android:label="@string/title_register"/>
+            android:label="@string/title_register" />
         <activity
             android:name=".ui.user.ForgotPasswordPageActivity"
-            android:label="@string/title_forgot_password"/>
+            android:label="@string/title_forgot_password" />
         <activity
             android:name=".ui.user.EditProfilePictureActivity"
-            android:label="@string/title_edit_profile_picture"/>
-
+            android:label="@string/title_edit_profile_picture" />
         <activity
             android:name=".ui.greenspace.GreenSpaceDetailsActivity"
-            android:label="@string/title_greenspace_details"/>
+            android:label="@string/title_greenspace_details" />
         <activity
             android:name=".ui.greenspace.GreenSpaceReviewsActivity"
-            android:label="@string/title_greenspace_reviews"/>
+            android:label="@string/title_greenspace_reviews" />
         <activity
             android:name=".ui.greenspace.GreenEventDetailsActivity"
-            android:label="@string/title_green_event_details"/>
+            android:label="@string/title_green_event_details" />
 
         <receiver android:name=".ui.greenspace.notificationReceiver" />
 

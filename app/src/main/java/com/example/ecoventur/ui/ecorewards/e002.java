@@ -34,6 +34,12 @@ public class e002 extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        AppCompatActivity activity = (AppCompatActivity) requireActivity();
+
+        // Set the title for the Toolbar in the hosting activity
+        if (activity != null && activity.getSupportActionBar() != null) {
+            activity.getSupportActionBar().setTitle("EcoCoins Balance");
+        }
         View view = inflater.inflate(R.layout.fragment_e002, container, false);
 
         // Find the TextView for ecocoinsbalance

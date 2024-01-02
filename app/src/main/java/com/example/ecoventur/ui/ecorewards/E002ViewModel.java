@@ -82,32 +82,32 @@ public class E002ViewModel extends ViewModel {
     }
 
     public void calculateBalance() {
-        db.collection("users").document("uaPJZguefgcNGyl0Ig2sy1Yq6tu1")
-                .get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.exists()) {
-                        Long ecocoin = documentSnapshot.getLong("ecocoin");
-                        if (ecocoin != null) {
-                            LiveData<List<Transaction>> spendingData = spending;
-                            LiveData<List<Transaction>> earningData = earning;
+        LiveData<List<Transaction>> spendingData = getSpending();
+        LiveData<List<Transaction>> earningData = getEarning();
 
-                            spendingData.observeForever(spendingList -> {
-                                earningData.observeForever(earningList -> {
-                                    if (spendingList != null && earningList != null) {
-                                        int totalSpending = calculateTotalSpending(spendingList);
-                                        int totalEarning = calculateTotalEarning(earningList);
+        spendingData.observeForever(spendingList -> {
+            earningData.observeForever(earningList -> {
+                if (spendingList != null && earningList != null) {
+                    int totalSpending = calculateTotalSpending(spendingList);
+                    int totalEarning = calculateTotalEarning(earningList);
 
-                                        int finalBalance = ecocoin.intValue() + totalEarning - totalSpending;
-                                        balance.setValue(finalBalance);
+                    // Calculate the balance without querying Firestore ecocoin value
+                    int newBalance = totalEarning - totalSpending;
 
-                                        // Update ecocoin field in Firestore with the new calculated balance
-                                        updateEcocoinFieldInFirestore(finalBalance);
-                                    }
-                                });
-                            });
-                        }
+                    // Adding 500 to the calculated newBalance
+                    newBalance += 500;
+
+                    // Get the existing ecocoin value from the balance LiveData
+                    Integer currentBalance = balance.getValue();
+
+                    if (currentBalance == null || newBalance != currentBalance) {
+                        // If there's a change in balance, update LiveData and Firestore
+                        balance.setValue(newBalance);
+                        updateEcocoinFieldInFirestore(newBalance);
                     }
-                });
+                }
+            });
+        });
     }
 
     private void updateEcocoinFieldInFirestore(int finalBalance) {

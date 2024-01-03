@@ -89,4 +89,44 @@
     <action
         android:id="@+id/action_TransitFragment_to_ViewAllCompleted"
         app:destination="@id/ViewAllCompleted" />
+
+    <fragment
+        android:id="@+id/e003"
+        android:name="com.example.ecoventur.ui.ecorewards.fragments.ViewEcorewardsCatalogFragment"
+        android:label="fragment_e003"
+        tools:layout="@layout/fragment_view_ecorewards_catalog" />
+    <fragment
+        android:id="@+id/e001"
+        android:name="com.example.ecoventur.ui.ecorewards.fragments.RedeemVoucherFragment"
+        android:label="fragment_e001"
+        tools:layout="@layout/fragment_redeem_voucher" />
+    <action
+        android:id="@+id/action_e003_to_e001"
+        app:destination="@id/e001"
+        app:popUpTo="@id/e003"
+        app:popUpToInclusive="true" />
+    <fragment
+        android:id="@+id/e00101"
+        android:name="com.example.ecoventur.ui.ecorewards.fragments.VouchersFragment"
+        android:label="fragment_e00101"
+        tools:layout="@layout/fragment_vouchers" >
+        <action
+            android:id="@+id/action_e00101_to_QRDisplay"
+            app:destination="@id/QRDisplay" />
+    </fragment>
+    <action
+        android:id="@+id/action_e001_to_e00101"
+        app:destination="@id/e00101"
+        app:popUpTo="@id/e001"
+        app:popUpToInclusive="true" />
+    <fragment
+        android:id="@+id/QRDisplay"
+        android:name="com.example.ecoventur.ui.ecorewards.fragments.QRDisplayFragment"
+        android:label="fragment_qr_display"
+        tools:layout="@layout/fragment_qr_display" />
+    <fragment
+        android:id="@+id/e002"
+        android:name="com.example.ecoventur.ui.ecorewards.fragments.ViewEcocoinsBalanceFragment"
+        android:label="fragment_e002"
+        tools:layout="@layout/fragment_view_ecocoins_balance" />
 </navigation>

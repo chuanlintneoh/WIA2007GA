@@ -10,7 +10,7 @@ public class EcoRewardsViewModel extends ViewModel {
 
     public EcoRewardsViewModel() {
         mText = new MutableLiveData<>();
-        mText.setValue("EcoCoins & EcoRewards module contents...\n[TOH YAN XIN]");
+//        mText.setValue("EcoCoins & EcoRewards module contents...\n[TOH YAN XIN]");
     }
 
     public LiveData<String> getText() {

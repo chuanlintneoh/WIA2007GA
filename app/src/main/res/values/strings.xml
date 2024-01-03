@@ -17,8 +17,10 @@
 
     <string name="title_ecoeducation">EcoLearningHub</string>
 
-    <string name="title_ecorewards">EcoCoins and EcoRewards</string>
+    <string name="title_ecorewards">EcoRewards</string>
 
     <string name="android_client_id">21562411440-hmd8k314d9j70vh52mfommplaisvkml1.apps.googleusercontent.com</string>
     <string name="API_key">AIzaSyBP0Wf3PmKlYzqMVMgm-bg0cGKLjWu1MxM</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

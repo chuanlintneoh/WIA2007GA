@@ -29,6 +29,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.5"
+            android:adjustViewBounds="true"
             android:src="@drawable/ecocoin"
             android:layout_gravity="center_vertical"/>
 

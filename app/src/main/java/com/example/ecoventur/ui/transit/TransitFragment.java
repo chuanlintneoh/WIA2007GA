@@ -143,6 +143,7 @@ public class TransitFragment extends Fragment {
 
         //Fetch data from firestore
         fetchAllChallenging(userID);
+        fetchAllChallenges();
         fetchAllCompleted(userID);
 
 
@@ -259,8 +260,6 @@ public class TransitFragment extends Fragment {
                             // Log the message with the record count
                             String message = recordCount + " records fetched from Firebase";
                             Log.d("FirebaseFetch (Challenging)", message);
-
-                            fetchAllChallenges();
                         } catch (Exception e) {
                             Log.e("FirebaseFetch (Challenging)", "Exception while processing documents: " + e.getMessage());
                         }

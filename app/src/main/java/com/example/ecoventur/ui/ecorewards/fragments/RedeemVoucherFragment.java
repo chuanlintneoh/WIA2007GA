@@ -137,7 +137,7 @@ public class RedeemVoucherFragment extends Fragment {
                                     builder.setTitle("Confirm redemption?");
                                     builder.setMessage("EcoCoins will be deducted.");
                                     builder.setPositiveButton("Yes", (dialog, which) -> {
-                                        redeemVoucherAndNavigate(selectedDocId);
+                                        redeemVoucher(selectedDocId);
                                     });
                                     builder.setNegativeButton("No", (dialog, which) -> dialog.dismiss());
                                     builder.show();
@@ -166,10 +166,7 @@ public class RedeemVoucherFragment extends Fragment {
         });
     }
 
-
-
-
-    private void redeemVoucherAndNavigate(String selectedDocId) {
+    private void redeemVoucher(String selectedDocId) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference voucherRef = db.collection("redeemVouchers").document(selectedDocId);
 
@@ -193,7 +190,7 @@ public class RedeemVoucherFragment extends Fragment {
                     bundle.putBoolean("isActiveVoucher", true);
                     bundle.putBoolean("redemptionConfirmed", true); //delete if crash
 
-                    Navigation.findNavController(requireView()).navigate(R.id.action_e001_to_e00101, bundle);
+//                    Navigation.findNavController(requireView()).navigate(R.id.action_e001_to_e00101, bundle);
 
                 }
             }

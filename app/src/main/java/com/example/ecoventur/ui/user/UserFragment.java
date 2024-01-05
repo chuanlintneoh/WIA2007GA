@@ -117,9 +117,11 @@ public class UserFragment extends Fragment {
                         if (task.isSuccessful()) {
                             DocumentSnapshot document = task.getResult();
                             // Access the profilePicUrl field
-                            String profilePicUrl = document.getString("profilePicUrl");
-                            if(profilePicUrl!=null && !profilePicUrl.isEmpty()){
-                                Glide.with(profilepic.getContext()).load(profilePicUrl).into(profilepic);
+                            if (document.contains("profilePicUrl")){
+                                String profilePicUrl = document.getString("profilePicUrl");
+                                if(profilePicUrl!=null && !profilePicUrl.isEmpty()){
+                                    Glide.with(profilepic.getContext()).load(profilePicUrl).into(profilepic);
+                                }
                             }
                         }
                     }

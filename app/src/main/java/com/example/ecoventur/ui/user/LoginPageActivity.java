@@ -198,11 +198,9 @@ public class LoginPageActivity extends AppCompatActivity {
                                             userData.put("username", user.getDisplayName());
                                             userData.put("phone", user.getPhoneNumber());
                                             userData.put("email", user.getEmail());
-                                            userData.put("ecocoin", 20);
+                                            userData.put("ecocoin", 500);
                                             if (user.getPhotoUrl() != null) {
                                                 userData.put("profilePicUrl", user.getPhotoUrl().toString());
-                                            } else {
-                                                userData.put("profilePicUrl", "https://media.istockphoto.com/id/1291368509/vector/city-park.jpg?s=612x612&w=0&k=20&c=573_l7GXBpiGj9QcoLdLr90SHsVxzEs_6Y0Q25wi4LQ=");
                                             }
 
                                             db.collection("users").document(user.getUid())

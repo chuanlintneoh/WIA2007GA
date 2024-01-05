@@ -87,8 +87,10 @@ public class GreenEventsList {
                         .addOnCompleteListener(task -> {
                             if (task.isSuccessful()) {
                                 for (QueryDocumentSnapshot document: task.getResult()) {
-                                    String eventId = document.getDocumentReference("eventId").getId();
-                                    eventIds.add(eventId);
+                                    if (document.contains("eventId")) {
+                                        String eventId = document.getDocumentReference("eventId").getId();
+                                        eventIds.add(eventId);
+                                    }
                                 }
                                 ArrayList<GreenEvent> filteredEvents = new ArrayList<>();
                                 for (GreenEvent event: greenEvents) {

@@ -23,6 +23,8 @@ import com.bumptech.glide.Glide;
 import com.example.ecoventur.R;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -37,7 +39,8 @@ import java.util.TimeZone;
 
 public class GreenEventDetailsActivity extends AppCompatActivity {
     private String eventId;
-    private final String UID = "uaPJZguefgcNGyl0Ig2sy1Yq6tu1";// to be passed from MainActivity during login
+    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    private String UID;
     private GreenEvent event = new GreenEvent();
     private ImageView IVEventImage;
     private TextView TVEventName, TVEventEcoCoins, TVEventDate, TVEventDuration, TVEventFee, TVEventVenue, TVEventDistance, TVEventParticipants, TVEventTnC, TVEventDetails;
@@ -47,6 +50,7 @@ public class GreenEventDetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_green_event_details);
 
+        UID = user.getUid();
         Intent intent = getIntent();
         if (intent != null) {
             eventId = intent.getStringExtra("eventId");

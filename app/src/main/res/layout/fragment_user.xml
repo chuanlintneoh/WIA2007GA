@@ -33,9 +33,8 @@
         android:drawableLeft="@drawable/baseline_email_24"
         android:drawablePadding="20dp"
         android:text="Email Address"
-        android:fontFamily="@font/alata"
         android:textColor="#000000"
-        android:textSize="25sp"
+        android:textSize="18sp"
         android:textAllCaps="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -75,7 +74,6 @@
         android:drawableLeft="@drawable/baseline_local_phone_24"
         android:drawablePadding="20dp"
         android:text="Phone Number"
-        android:fontFamily="@font/alata"
         android:textColor="#000000"
         android:textSize="25sp"
         android:textAllCaps="false"
@@ -93,10 +91,9 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:backgroundTint="#FFFFFF"
-        android:drawableLeft="@drawable/ecocoin"
+        android:drawableLeft="@drawable/ecocoin_small"
         android:drawablePadding="15dp"
         android:text="0 EcoCoins"
-        android:fontFamily="@font/alata"
         android:textColor="#000000"
         android:textSize="25sp"
         android:textAllCaps="false"
@@ -133,10 +130,11 @@
         android:id="@+id/ProfilePicture"
         android:layout_width="149dp"
         android:layout_height="131dp"
+        android:layout_marginTop="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/defaultprofilepic" />
+        app:srcCompat="@drawable/user_big" />
 
     <ProgressBar
         android:id="@+id/progressBara004p"

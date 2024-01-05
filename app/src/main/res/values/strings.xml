@@ -2,7 +2,6 @@
     <string name="app_name">EcoVentur</string>
 
     <string name="title_user">Profile</string>
-    <string name="title_landing">Welcome to EcoVentur</string>
     <string name="title_login">Login to EcoVentur</string>
     <string name="title_register">Register New Account</string>
     <string name="title_forgot_password">Change Password</string>
@@ -21,6 +20,4 @@
 
     <string name="android_client_id">21562411440-hmd8k314d9j70vh52mfommplaisvkml1.apps.googleusercontent.com</string>
     <string name="API_key">AIzaSyBP0Wf3PmKlYzqMVMgm-bg0cGKLjWu1MxM</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

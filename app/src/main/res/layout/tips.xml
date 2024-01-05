@@ -48,7 +48,7 @@
                 android:layout_width="0dp"
                 android:layout_margin="5dp"
                 android:id="@+id/cancel"
-                android:text="Cancel"
+                android:text="Okay"
                 android:layout_weight="0.5"
                 android:layout_height="wrap_content"/>
         </LinearLayout>

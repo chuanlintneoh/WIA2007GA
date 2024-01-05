@@ -156,49 +156,51 @@ public class DigitalPassportFragment extends DialogFragment {
 
     private void fetchBadgeDetails(DocumentReference awardsIDRef) {
         // Fetch details using awardsIDRef
-        awardsIDRef.get().addOnCompleteListener(badgeTask -> {
-            if (badgeTask.isSuccessful()) {
-                DocumentSnapshot badgeDocument = badgeTask.getResult();
-                if (badgeDocument.exists()) {
-                    // Access badge details from the badge document
-                    String badgeName = badgeDocument.getString("name");
-                    String imageUrl = badgeDocument.getString("image_Url");
+        if (awardsIDRef != null) {
+            awardsIDRef.get().addOnCompleteListener(badgeTask -> {
+                if (badgeTask.isSuccessful()) {
+                    DocumentSnapshot badgeDocument = badgeTask.getResult();
+                    if (badgeDocument.exists()) {
+                        // Access badge details from the badge document
+                        String badgeName = badgeDocument.getString("name");
+                        String imageUrl = badgeDocument.getString("image_Url");
 
-                    // Log badge details
-                    Log.d("FirebaseFetch (Digital Passport)", "BadgeName: " + badgeName + ", ImageUrl: " + imageUrl);
+                        // Log badge details
+                        Log.d("FirebaseFetch (Digital Passport)", "BadgeName: " + badgeName + ", ImageUrl: " + imageUrl);
 
-                    // Create a view for the badge (inflate badge_item.xml)
-                    View badgeView = LayoutInflater.from(getActivity()).inflate(R.layout.badge_item, null);
+                        // Create a view for the badge (inflate badge_item.xml)
+                        View badgeView = LayoutInflater.from(getActivity()).inflate(R.layout.badge_item, null);
 
-                    // Access views in the inflated layout
-                    ImageView badgeImage = badgeView.findViewById(R.id.badgeImage);
-                    TextView badgeNameTextView = badgeView.findViewById(R.id.badgeName);
-                    badgeNameTextView.setTextColor(Color.GRAY);
+                        // Access views in the inflated layout
+                        ImageView badgeImage = badgeView.findViewById(R.id.badgeImage);
+                        TextView badgeNameTextView = badgeView.findViewById(R.id.badgeName);
+                        badgeNameTextView.setTextColor(Color.GRAY);
 
-                    // Set badge details
-                    badgeNameTextView.setText(badgeName);
-                    // Load badgeImage using Glide or any other image loading library
-                    Glide.with(this).load(imageUrl).into(badgeImage);
+                        // Set badge details
+                        badgeNameTextView.setText(badgeName);
+                        // Load badgeImage using Glide or any other image loading library
+                        Glide.with(this).load(imageUrl).into(badgeImage);
 
-                    // Set layout parameters with margins to add spacing
-                    LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-                            LinearLayout.LayoutParams.WRAP_CONTENT,
-                            LinearLayout.LayoutParams.WRAP_CONTENT
-                    );
+                        // Set layout parameters with margins to add spacing
+                        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                                LinearLayout.LayoutParams.WRAP_CONTENT,
+                                LinearLayout.LayoutParams.WRAP_CONTENT
+                        );
 
-                    // Add margins to create spacing between badges
-                    layoutParams.setMargins(0, 0, 24, 0); // Adjust the right margin as needed
+                        // Add margins to create spacing between badges
+                        layoutParams.setMargins(0, 0, 24, 0); // Adjust the right margin as needed
 
-                    // Apply layout parameters
-                    badgeView.setLayoutParams(layoutParams);
+                        // Apply layout parameters
+                        badgeView.setLayoutParams(layoutParams);
 
-                    // Add the badge view to the badgeSection
-                    badgeSection.addView(badgeView);
+                        // Add the badge view to the badgeSection
+                        badgeSection.addView(badgeView);
+                    }
+                } else {
+                    Log.e("FirebaseFetch (Digital Passport)", "Error getting badge document: " + badgeTask.getException());
+                    Toast.makeText(getActivity(), "Error fetching badge data", Toast.LENGTH_SHORT).show();
                 }
-            } else {
-                Log.e("FirebaseFetch (Digital Passport)", "Error getting badge document: " + badgeTask.getException());
-                Toast.makeText(getActivity(), "Error fetching badge data", Toast.LENGTH_SHORT).show();
-            }
-        });
+            });
+        }
     }
 }

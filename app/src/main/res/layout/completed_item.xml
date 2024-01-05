@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="5dp"
-    app:cardCornerRadius="5dp">
+    app:cardCornerRadius="5dp"
+    android:backgroundTint="@color/white">
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
@@ -109,6 +110,8 @@
                 android:layout_height="0dp"
                 android:layout_weight="4"
                 android:text="Challenge Title"
+                android:fontFamily="@font/alata"
+                android:textColor="@color/black"
                 android:textStyle="bold"
                 android:gravity="bottom"
                 android:textSize="18sp"/>
@@ -120,6 +123,8 @@
                 android:layout_height="0dp"
                 android:layout_weight="3"
                 android:text="8/1/2024 - 14/1/2024"
+                android:fontFamily="@font/alata"
+                android:textColor="@color/black"
                 android:textSize="16sp" />
         </LinearLayout>
     </LinearLayout>

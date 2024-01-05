@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -30,6 +31,7 @@ import com.google.firebase.storage.UploadTask;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class EditProfilePictureActivity extends AppCompatActivity {
     private static final int PICK_IMAGE_REQUEST = 1;
@@ -96,6 +98,33 @@ public class EditProfilePictureActivity extends AppCompatActivity {
             updateProfilePicture(selectedImageUri);
         }
     }
+    private void deleteProfilePicture() {
+        // Delete current profile picture
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        if (firebaseAuth.getCurrentUser() != null) {
+            String userId = firebaseAuth.getCurrentUser().getUid();
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            db.collection("users").document(userId).get()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot document = task.getResult();
+                            if (document != null && document.exists()) {
+                                String previousProfilePicUrl = document.getString("profilePicUrl");
+                                if (previousProfilePicUrl != null && !previousProfilePicUrl.isEmpty()) {
+                                    StorageReference previousImageRef = FirebaseStorage.getInstance().getReferenceFromUrl(previousProfilePicUrl);
+                                    previousImageRef.delete().addOnSuccessListener(aVoid -> {
+                                        // File deleted successfully
+                                        Log.d("ProfilePictureUpdate", "Previous profile picture deleted successfully.");
+                                    }).addOnFailureListener(exception -> {
+                                        // Uh-oh, an error occurred!
+                                        Log.d("ProfilePictureUpdate", "Failed to delete previous profile picture: " + exception.getMessage());
+                                    });
+                                }
+                            }
+                        }
+                    });
+        }
+    }
 
     private void updateProfilePicture(Uri imageUri) {
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
@@ -104,48 +133,67 @@ public class EditProfilePictureActivity extends AppCompatActivity {
             progressDialog.show(); // Show progress dialog
 
             FirebaseFirestore db = FirebaseFirestore.getInstance();
-            StorageReference storageRef = FirebaseStorage.getInstance().getReference();
-            StorageReference imageRef = storageRef.child("images/" + userId + "/profile.jpg");
 
-            // Upload the file and add an onSuccessListener to get the download URL
-            imageRef.putFile(imageUri)
-                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            // Get the download URL
-                            imageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                @Override
-                                public void onSuccess(Uri downloadUri) {
-                                    // Store the download URL in Firestore
-                                    Map<String, Object> user = new HashMap<>();
-                                    user.put("profilePicUrl", downloadUri.toString());
+            // Delete the old profile picture
+            db.collection("users").document(userId).get()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot document = task.getResult();
+                            if (document != null && document.exists()) {
+                                String previousProfilePicUrl = document.getString("profilePicUrl");
+                                if (previousProfilePicUrl != null && !previousProfilePicUrl.isEmpty()) {
+                                    StorageReference previousImageRef = FirebaseStorage.getInstance().getReferenceFromUrl(previousProfilePicUrl);
+                                    previousImageRef.delete().addOnSuccessListener(aVoid -> {
+                                        // File deleted successfully
+                                        Log.d("ProfilePictureUpdate", "Previous profile picture deleted successfully.");
+                                        StorageReference imageRef = FirebaseStorage.getInstance().getReference().child("profilePictures/" + UUID.randomUUID().toString());
+                                        // Upload the file and add an onSuccessListener to get the download URL
+                                        imageRef.putFile(imageUri)
+                                                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                                    @Override
+                                                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                                        // Get the download URL
+                                                        imageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                                            @Override
+                                                            public void onSuccess(Uri downloadUri) {
+                                                                // Store the download URL in Firestore
+                                                                Map<String, Object> user = new HashMap<>();
+                                                                user.put("profilePicUrl", downloadUri.toString());
 
-                                    db.collection("users").document(userId)
-                                            .update(user)
-                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                @Override
-                                                public void onSuccess(Void aVoid) {
-                                                    updatePicture();
-                                                    progressDialog.dismiss();
-                                                    Toast.makeText(EditProfilePictureActivity.this, "Profile picture updated successfully.", Toast.LENGTH_SHORT).show();
-                                                }
-                                            })
-                                            .addOnFailureListener(new OnFailureListener() {
-                                                @Override
-                                                public void onFailure(@NonNull Exception e) {
-                                                    progressDialog.dismiss(); // Dismiss progress dialog on failure
-                                                    Toast.makeText(EditProfilePictureActivity.this, "Failed to update profile picture.", Toast.LENGTH_SHORT).show();
-                                                }
-                                            });
+                                                                db.collection("users").document(userId)
+                                                                        .update(user)
+                                                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                            @Override
+                                                                            public void onSuccess(Void aVoid) {
+                                                                                updatePicture();
+                                                                                progressDialog.dismiss();
+                                                                                Toast.makeText(EditProfilePictureActivity.this, "Profile picture updated successfully.", Toast.LENGTH_SHORT).show();
+                                                                            }
+                                                                        })
+                                                                        .addOnFailureListener(new OnFailureListener() {
+                                                                            @Override
+                                                                            public void onFailure(@NonNull Exception e) {
+                                                                                progressDialog.dismiss(); // Dismiss progress dialog on failure
+                                                                                Toast.makeText(EditProfilePictureActivity.this, "Failed to update profile picture.", Toast.LENGTH_SHORT).show();
+                                                                            }
+                                                                        });
+                                                            }
+                                                        });
+                                                    }
+                                                })
+                                                .addOnFailureListener(new OnFailureListener() {
+                                                    @Override
+                                                    public void onFailure(@NonNull Exception e) {
+                                                        progressDialog.dismiss(); // Dismiss progress dialog on failure
+                                                        Toast.makeText(EditProfilePictureActivity.this, "Failed to upload image.", Toast.LENGTH_SHORT).show();
+                                                    }
+                                                });
+                                    }).addOnFailureListener(exception -> {
+                                        // Uh-oh, an error occurred!
+                                        Log.d("ProfilePictureUpdate", "Failed to delete previous profile picture: " + exception.getMessage());
+                                    });
                                 }
-                            });
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            progressDialog.dismiss(); // Dismiss progress dialog on failure
-                            Toast.makeText(EditProfilePictureActivity.this, "Failed to upload image.", Toast.LENGTH_SHORT).show();
+                            }
                         }
                     });
         }

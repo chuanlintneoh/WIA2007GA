@@ -238,6 +238,7 @@ public class GreenSpaceFragment extends Fragment implements OnMapReadyCallback {
     public void onResume(){
         super.onResume();
         mapView.onResume();
+        searchView.clearFocus();
     }
     @Override
     public void onPause(){

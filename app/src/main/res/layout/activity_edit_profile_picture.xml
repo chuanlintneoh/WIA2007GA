@@ -40,22 +40,37 @@
         android:layout_height="350dp"
         android:layout_gravity="center"
         android:layout_marginTop="80dp"
-        android:layout_marginBottom="30dp"
         app:srcCompat="@drawable/user_big"/>
 
     <Button
         android:id="@+id/btnRemovePhoto"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
         android:layout_gravity="center"
         android:text="Remove Photo"/>
 
     <Button
-        android:id="@+id/changeProfilePicButton"
+        android:id="@+id/btnTakePhoto"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="10dp"
         android:layout_gravity="center"
-        android:text="Change Photo"/>
+        android:text="Take Photo"/>
+
+    <Button
+        android:id="@+id/btnChoosePhoto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_gravity="center"
+        android:text="Choose Photo"/>
+
+    <Button
+        android:id="@+id/btnApplyChanges"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_gravity="center"
+        android:text="Apply Changes"/>
 </LinearLayout>

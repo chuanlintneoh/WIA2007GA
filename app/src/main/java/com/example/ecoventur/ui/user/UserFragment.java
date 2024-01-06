@@ -65,7 +65,6 @@ public class UserFragment extends Fragment {
         email = context.findViewById(R.id.displayemail);
         phone = context.findViewById(R.id.phoneNumber);
         Ecocoins = context.findViewById(R.id.EcoCoin);
-        progressBar = context.findViewById(R.id.progressBara004p);
         user = auth.getCurrentUser();
         db = FirebaseFirestore.getInstance();
 

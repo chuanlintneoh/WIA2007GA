@@ -1,34 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#8AF8BC"
+    android:orientation="vertical"
     tools:context=".ui.user.UserFragment">
+
+    <ImageView
+        android:id="@+id/ProfilePicture"
+        android:layout_width="149dp"
+        android:layout_height="131dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="40dp"
+        app:srcCompat="@drawable/user_big" />
 
     <TextView
         android:id="@+id/name"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
+        android:gravity="center"
         android:text="Username"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="40dp"
         android:fontFamily="@font/alata"
         android:textColor="@color/black"
-        android:textSize="34sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ProfilePicture"
-        app:layout_constraintVertical_bias="0.034" />
+        android:textSize="34sp"/>
+
+    <Button
+        android:id="@+id/EcoCoin"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_gravity="center"
+        android:backgroundTint="#FFFFFF"
+        android:drawableLeft="@drawable/ecocoin_small"
+        android:drawablePadding="15dp"
+        android:text="0 EcoCoins"
+        android:textColor="#000000"
+        android:textSize="25sp"
+        android:textAllCaps="false"
+        android:layout_marginHorizontal="20dp"/>
 
     <Button
         android:id="@+id/displayemail"
-        android:layout_width="370dp"
-        android:layout_height="60dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_gravity="center"
         android:backgroundTint="#FFFFFF"
         android:drawableLeft="@drawable/baseline_email_24"
         android:drawablePadding="20dp"
@@ -36,19 +57,29 @@
         android:textColor="#000000"
         android:textSize="18sp"
         android:textAllCaps="false"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.609"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/EcoCoin"
-        app:layout_constraintVertical_bias="0.053" />
+        android:layout_marginHorizontal="20dp"/>
+
+    <Button
+        android:id="@+id/phoneNumber"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_gravity="center"
+        android:backgroundTint="#FFFFFF"
+        android:drawableLeft="@drawable/baseline_local_phone_24"
+        android:drawablePadding="20dp"
+        android:text="Phone Number"
+        android:textColor="#000000"
+        android:textSize="25sp"
+        android:textAllCaps="false"
+        android:layout_marginHorizontal="20dp"/>
 
     <Button
         android:id="@+id/editprofile"
-        android:layout_width="370dp"
-        android:layout_height="60dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_gravity="center"
         android:backgroundTint="@color/yellow"
         android:drawableLeft="@drawable/baseline_mode_edit_24"
         android:drawablePadding="20dp"
@@ -57,60 +88,14 @@
         android:textColor="#000000"
         android:textSize="28sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.609"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/phoneNumber"
-        app:layout_constraintVertical_bias="0.09" />
-
-    <Button
-        android:id="@+id/phoneNumber"
-        android:layout_width="370dp"
-        android:layout_height="60dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:backgroundTint="#FFFFFF"
-        android:drawableLeft="@drawable/baseline_local_phone_24"
-        android:drawablePadding="20dp"
-        android:text="Phone Number"
-        android:textColor="#000000"
-        android:textSize="25sp"
-        android:textAllCaps="false"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.609"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/displayemail"
-        app:layout_constraintVertical_bias="0.069" />
-
-    <Button
-        android:id="@+id/EcoCoin"
-        android:layout_width="370dp"
-        android:layout_height="60dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:backgroundTint="#FFFFFF"
-        android:drawableLeft="@drawable/ecocoin_small"
-        android:drawablePadding="15dp"
-        android:text="0 EcoCoins"
-        android:textColor="#000000"
-        android:textSize="25sp"
-        android:textAllCaps="false"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.609"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/name"
-        app:layout_constraintVertical_bias="0.042" />
+        android:layout_marginHorizontal="20dp"/>
 
     <Button
         android:id="@+id/logout"
-        android:layout_width="370dp"
-        android:layout_height="60dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="18dp"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_gravity="center"
         android:backgroundTint="@color/yellow"
         android:drawableLeft="@drawable/baseline_logout_24"
         android:drawablePadding="20dp"
@@ -119,35 +104,6 @@
         android:textColor="#000000"
         android:textSize="28sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.609"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editprofile"
-        app:layout_constraintVertical_bias="0.179" />
-
-    <ImageView
-        android:id="@+id/ProfilePicture"
-        android:layout_width="149dp"
-        android:layout_height="131dp"
-        android:layout_marginTop="20dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/user_big" />
-
-    <ProgressBar
-        android:id="@+id/progressBara004p"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="411dp"
-        android:layout_marginBottom="731dp"
-        android:visibility="gone"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintVertical_bias="0.5" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginBottom="40dp"/>
+</LinearLayout>

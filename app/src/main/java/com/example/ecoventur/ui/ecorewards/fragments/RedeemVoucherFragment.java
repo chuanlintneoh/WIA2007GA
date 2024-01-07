@@ -24,17 +24,26 @@ import com.bumptech.glide.Glide;
 import com.example.ecoventur.R;
 import com.example.ecoventur.ui.ecorewards.viewModels.RedeemVoucherViewModel;
 import com.example.ecoventur.ui.ecorewards.viewModels.ViewEcorewardsCatalogViewModel;
+import com.example.ecoventur.ui.greenspace.Callback;
+import com.example.ecoventur.ui.greenspace.ecoCoinsManager;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class RedeemVoucherFragment extends Fragment {
+    private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    private String UID;
     private ViewEcorewardsCatalogViewModel viewModelE003;
     private RedeemVoucherViewModel viewModelE001;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (user != null) {
+            UID = user.getUid();
+        }
         viewModelE003 = new ViewModelProvider(requireActivity()).get(ViewEcorewardsCatalogViewModel.class);
         viewModelE001 = new ViewModelProvider(requireActivity()).get(RedeemVoucherViewModel.class);
     }
@@ -179,19 +188,28 @@ public class RedeemVoucherFragment extends Fragment {
                     long ecoCoinsLong = snapshot.getLong("ecoCoins");
                     int ecoCoins = (int) ecoCoinsLong;
 
-                    // Set redeemed voucher details in ViewModel
-                    viewModelE001.setRedeemedVoucherDetails(voucherTitle, imgURL1, ecoCoins);
+                    ecoCoinsManager.deductEcoCoins(UID, "Redeemed " + voucherTitle, ecoCoins, new Callback() {
+                        @Override
+                        public void onDataLoaded(Object data) {
+                            Toast.makeText(requireContext(), "Voucher redeemed successfully!", Toast.LENGTH_SHORT).show();
+                            // Set redeemed voucher details in ViewModel
+                            viewModelE001.setRedeemedVoucherDetails(voucherTitle, imgURL1, ecoCoins);
 
-                    // Navigate to e00101 fragment and pass voucher details via Bundle
-                    Bundle bundle = new Bundle();
-                    bundle.putString("voucherTitle", voucherTitle);
-                    bundle.putString("imgURL1", imgURL1);
-                    bundle.putInt("ecoCoins", ecoCoins);
-                    bundle.putBoolean("isActiveVoucher", true);
-                    bundle.putBoolean("redemptionConfirmed", true); //delete if crash
+                            // Navigate to e00101 fragment and pass voucher details via Bundle
+                            Bundle bundle = new Bundle();
+                            bundle.putString("voucherTitle", voucherTitle);
+                            bundle.putString("imgURL1", imgURL1);
+                            bundle.putInt("ecoCoins", ecoCoins);
+                            bundle.putBoolean("isActiveVoucher", true);
+                            bundle.putBoolean("redemptionConfirmed", true); //delete if crash
 
-                    Navigation.findNavController(requireView()).navigate(R.id.action_e001_to_e00101, bundle);
+                            Navigation.findNavController(requireView()).navigate(R.id.action_e001_to_e00101, bundle);
+                        }
 
+                        @Override
+                        public void onFailure(Exception exception) {
+                        }
+                    });
                 }
             }
         });

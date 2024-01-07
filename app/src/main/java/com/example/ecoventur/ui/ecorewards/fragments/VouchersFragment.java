@@ -56,7 +56,7 @@ public class VouchersFragment extends Fragment {
         AppCompatActivity activity = (AppCompatActivity) requireActivity();
 
         // Set the title for the Toolbar in the hosting activity
-        if (activity != null && activity.getSupportActionBar() != null) {
+        if (activity.getSupportActionBar() != null) {
             activity.getSupportActionBar().setTitle("Redeem Voucher");
         }
         View view = inflater.inflate(R.layout.fragment_vouchers, container, false);
@@ -119,8 +119,8 @@ public class VouchersFragment extends Fragment {
                     }
                 }
 
-                // Move expired vouchers to pastVoucher collection
-                moveExpiredVouchers(expiredVouchers, userRef);
+                // Delete expired vouchers
+                deleteExpiredVouchers(expiredVouchers, userRef);
 
                 // Update ViewModel with fetched active voucher data
                 viewModelE00101.setActiveVouchers(voucherList);
@@ -137,38 +137,20 @@ public class VouchersFragment extends Fragment {
         return currentDate.after(expiryDate);
     }
 
-    private void moveExpiredVouchers(ArrayList<DocumentSnapshot> expiredVouchers, DocumentReference userRef) {
-        CollectionReference pastVoucherCollectionRef = userRef.collection("pastVoucher");
+    private void deleteExpiredVouchers(ArrayList<DocumentSnapshot> expiredVouchers, DocumentReference userRef) {
         CollectionReference activeVoucherCollectionRef = userRef.collection("activeVoucher");
 
         for (DocumentSnapshot expiredVoucher : expiredVouchers) {
-            String voucherName = expiredVoucher.getString("voucherTitle");
-            String voucherImageURL = expiredVoucher.getString("imgURL1");
-
-            Long ecoCoinsLong = expiredVoucher.getLong("ecoCoins");
-            int ecoCoins = (ecoCoinsLong != null) ? ecoCoinsLong.intValue() : 0;
-
-            Map<String, Object> expiredVoucherData = expiredVoucher.getData();
-
             // Check if the voucher is expired
             if (isVoucherExpired(expiredVoucher.getTimestamp("timestamp").toDate())) {
                 // Move the expired voucher document from activeVoucher to pastVoucher
-                pastVoucherCollectionRef.add(expiredVoucherData)
-                        .addOnSuccessListener(result -> {
-                            // Successfully moved to pastVoucher
-                            // Delete the expired voucher from activeVoucher collection
-                            activeVoucherCollectionRef.document(expiredVoucher.getId())
-                                    .delete()
-                                    .addOnSuccessListener(aVoid -> {
-                                        Log.d("e00101 Fragment", "Expired voucher moved to pastVoucher and deleted from activeVoucher");
-                                    })
-                                    .addOnFailureListener(e -> {
-                                        Log.d("e00101 Fragment", "Failed to delete expired voucher from activeVoucher: " + e.getMessage());
-                                    });
+                activeVoucherCollectionRef.document(expiredVoucher.getId())
+                        .delete()
+                        .addOnSuccessListener(aVoid -> {
+                            Log.d("DeleteExpiredVouchers", "Expired voucher deleted successfully");
                         })
                         .addOnFailureListener(e -> {
-                            // Failed to move voucher to pastVoucher
-                            Log.d("e00101 Fragment", "Failed to move expired voucher to pastVoucher: " + e.getMessage());
+                            Log.d("DeleteExpiredVouchers", "Error deleting expired voucher: " + e.getMessage());
                         });
             }
         }
@@ -225,34 +207,11 @@ public class VouchersFragment extends Fragment {
         voucherData.put("timestamp", timestamp);
         voucherData.put("ecoCoins", ecoCoins);
 
-        // Reference the user document under 'users'
-        DocumentReference userRef = db.collection("users").document(userId);
-
         // Add the voucher data to the specified collection
         voucherCollectionRef.add(voucherData)
                 .addOnSuccessListener(documentReference -> {
                     // Voucher added successfully
-                    Toast.makeText(requireContext(), "Voucher added to Firestore", Toast.LENGTH_SHORT).show();
-
-                    // Additionally, if you want to update the 'spending' collection
-                    // Reference the 'spending' collection for the user
-                    CollectionReference spendingCollectionRef = userRef.collection("spending");
-
-                    // Create a document in the 'spending' collection with the voucher details
-                    Map<String, Object> spendingData = new HashMap<>();
-                    spendingData.put("title", voucherName);
-                    spendingData.put("ecoCoin", ecoCoins);
-                    spendingData.put("timestamp", timestamp);
-
-                    spendingCollectionRef.add(spendingData)
-                            .addOnSuccessListener(spendingDocumentReference -> {
-                                // Spendings updated successfully
-                                Toast.makeText(requireContext(), "Spending updated", Toast.LENGTH_SHORT).show();
-                            })
-                            .addOnFailureListener(e -> {
-                                // Failed to update spendings
-                                Toast.makeText(requireContext(), "Failed to update spending", Toast.LENGTH_SHORT).show();
-                            });
+                    Toast.makeText(requireContext(), "Voucher added!", Toast.LENGTH_SHORT).show();
                 })
                 .addOnFailureListener(e -> {
                     // Failed to add voucher

@@ -16,6 +16,8 @@ import com.example.ecoventur.ui.ecoeducation.dialogs.BadgeDialog;
 import com.example.ecoventur.ui.ecoeducation.models.Badges;
 import com.example.ecoventur.ui.ecoeducation.models.Quiz;
 import com.example.ecoventur.ui.ecoeducation.models.QuizResult;
+import com.example.ecoventur.ui.greenspace.Callback;
+import com.example.ecoventur.ui.greenspace.ecoCoinsManager;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -169,27 +171,55 @@ public class QuizActivity extends AppCompatActivity {
         quizResultData.setTimestamp(String.valueOf(totalCorrectToday));
         quizResultData.setEcoCoins(getEcoCoins());
 
+        // Assuming getEcoCoins() returns a String
+        String ecoCoinsString = getEcoCoins();
+
+        // Convert the String to int
+        int ecoCoinsValue;
+        try {
+            ecoCoinsValue = Integer.parseInt(ecoCoinsString);
+        }
+        catch (NumberFormatException e) {
+            // Handle the case where the String cannot be parsed as an integer
+            e.printStackTrace();// or log the error, show a message, etc.
+            return;// Exit the method if conversion fails
+        }
+
         // Obtain the user's UID
         String quiz = category;
 
-        // Access Firestore to store the QuizResult data
-        CollectionReference usersCollection = FirebaseFirestore.getInstance().collection("users");
-        DocumentReference quiz1ResultRef = usersCollection.document(uid)
-                .collection("quizWizResult")
-                .document(quiz + "Result");
+        // Access Firestore to store the QuizResult data in "earning" collection using ecoCoinsManager
+        ecoCoinsManager.addEcoCoins(uid, quizResultData.getTitle(), ecoCoinsValue, new Callback() {
+            @Override
+            public void onDataLoaded(Object data) {
+                // Handle success (if needed)
+                System.out.println("EcoCoins added successfully. Updated EcoCoins: " + data);
 
-        // Set the QuizResult data to Firestore
-        quiz1ResultRef.set(quizResultData)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            // Handle success (if needed)
-                        } else {
-                            Log.e("QuizWizResult", Objects.requireNonNull(task.getException().getLocalizedMessage()));
-                        }
-                    }
-                });
+                // Access Firestore to store the QuizResult data in "quizWizResult" collection
+                CollectionReference usersCollection = FirebaseFirestore.getInstance().collection("users");
+                DocumentReference quiz1ResultRef = usersCollection.document(uid)
+                        .collection("quizWizResult")
+                        .document(quiz + "Result");
+
+                quiz1ResultRef.set(quizResultData)
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(Task<Void> task) {
+                                if (task.isSuccessful()) {
+                                    // Handle success (if needed)
+                                } else {
+                                    Log.e("QuizWizResult", Objects.requireNonNull(task.getException().getLocalizedMessage()));
+                                }
+                            }
+                        });
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                // Handle failure
+                System.out.println("Failed to add EcoCoins: " + e.getMessage());
+            }
+        });
     }
     private void check(){
         String answer = "";

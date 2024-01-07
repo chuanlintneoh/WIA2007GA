@@ -45,6 +45,10 @@ import java.util.UUID;
 
 public class EditProfilePictureActivity extends AppCompatActivity {
     private Uri profilePictureUri = null;
+    private ProgressDialog progressDialog;
+    FirebaseFirestore db;
+    FirebaseUser user;
+
     ActivityResultLauncher<Intent> ARL = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
         @Override
         public void onActivityResult(ActivityResult result) {
@@ -59,9 +63,11 @@ public class EditProfilePictureActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile_picture);
+        db = FirebaseFirestore.getInstance();
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Updating Profile Picture...");
 
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
             db.collection("users").document(user.getUid()).get()
                     .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -104,19 +110,12 @@ public class EditProfilePictureActivity extends AppCompatActivity {
             }
         });
 
-        Button btnRemove = findViewById(R.id.btnRemovePhoto);
-        btnRemove.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                removeProfilePicture();
-            }
-        });
 
         Button btnApplyChanges = findViewById(R.id.btnApplyChanges);
         btnApplyChanges.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                updateProfilePicture();
+                updateProfilePicture(profilePictureUri);
             }
         });
 
@@ -128,10 +127,7 @@ public class EditProfilePictureActivity extends AppCompatActivity {
             }
         });
     }
-    private void removeProfilePicture() {
-        profilePictureUri = null;
-        Glide.with(EditProfilePictureActivity.this).load(R.drawable.user_big).into((ImageView) findViewById(R.id.picture));
-    }
+
     private void handleProfilePicture(Intent data) {
         if (data != null) {
             profilePictureUri = data.getData();
@@ -147,89 +143,47 @@ public class EditProfilePictureActivity extends AppCompatActivity {
             Glide.with(EditProfilePictureActivity.this).load(profilePictureUri).into((ImageView) findViewById(R.id.picture));
         }
     }
-    private void updateProfilePicture() {
-        // Update firebase storage and firestore
-        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-        if (firebaseAuth.getCurrentUser() != null) {
-            String userId = firebaseAuth.getCurrentUser().getUid();
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
-            deletePreviousProfilePicture(userId, db, new Callback() {
-                @Override
-                public void onDataLoaded(Object object) {
-                    if (profilePictureUri != null) {
-                        uploadNewProfilePicture(userId, db);
-                    }
-                }
-                @Override
-                public void onFailure(Exception e) {
 
-                }
-            });
-        }
-    }
-    private void deletePreviousProfilePicture(String userId, FirebaseFirestore db, Callback callback) {
-        db.collection("users").document(userId).get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot document = task.getResult();
-                        if (document != null && document.exists()) {
-                            if (!document.contains("profilePicUrl")) {
-                                callback.onDataLoaded(null);
-                                return;
-                            }
-                            String previousProfilePicUrl = document.getString("profilePicUrl");
-                            if (previousProfilePicUrl != null && !previousProfilePicUrl.isEmpty()) {
-                                StorageReference previousImageRef = FirebaseStorage.getInstance().getReferenceFromUrl(previousProfilePicUrl);
-                                previousImageRef.delete().addOnSuccessListener(aVoid -> {
-                                    // File deleted successfully
-                                    Log.d("ProfilePictureUpdate", "Previous profile picture deleted successfully.");
+    private void updateProfilePicture(Uri imageUri) {
 
-                                    // Clear the profilePicUrl field in user document
-                                    Map<String, Object> updateData = new HashMap<>();
-                                    updateData.put("profilePicUrl", FieldValue.delete());
+        if (user != null) {
+            String userId = user.getUid();
+            progressDialog.show(); // Show progress dialog
 
-                                    db.collection("users").document(userId)
-                                            .update(updateData)
-                                            .addOnSuccessListener(aVoid1 -> {
-                                                Log.d("ProfilePictureUpdate", "Profile picture URL removed from user document.");
-                                                callback.onDataLoaded(null);
-                                                Toast.makeText(EditProfilePictureActivity.this, "Profile picture removed successfully.", Toast.LENGTH_SHORT).show();
-                                            })
-                                            .addOnFailureListener(e -> {
-                                                Toast.makeText(EditProfilePictureActivity.this, "Failed to remove profile picture URL from user document.", Toast.LENGTH_SHORT).show();
-                                            });
-                                }).addOnFailureListener(exception -> {
-                                    // Uh-oh, an error occurred!
-                                    Log.d("ProfilePictureUpdate", "Failed to delete previous profile picture: " + exception.getMessage());
-                                });
-                            }
+            StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+            StorageReference imageRef = storageRef.child("images/" + userId + "/profile.jpg");
+
+            // Upload the file and add an onSuccessListener to get the download URL
+            imageRef.putFile(imageUri)
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            // Get the download URL
+                            imageRef.getDownloadUrl().addOnSuccessListener(downloadUri -> {
+                                // Store the download URL in Firestore
+                                Map<String, Object> user = new HashMap<>();
+                                user.put("profilePicUrl", downloadUri.toString());
+
+                                Task<Void> users = db.collection("users").document(userId)
+                                        .update(user)
+                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                progressDialog.dismiss();
+                                                Toast.makeText(EditProfilePictureActivity.this, "Profile picture updated successfully.", Toast.LENGTH_SHORT).show();
+                                            }
+                                        })
+                                        .addOnFailureListener(e -> {
+                                            progressDialog.dismiss(); // Dismiss progress dialog on failure
+                                            Toast.makeText(EditProfilePictureActivity.this, "Failed to update profile picture.", Toast.LENGTH_SHORT).show();
+                                        });
+                            });
                         }
-                    }
-                });
-    }
-    private void uploadNewProfilePicture(String userId, FirebaseFirestore db) {
-        StorageReference imageRef = FirebaseStorage.getInstance().getReference().child("profilePictures/" + userId);
-        // Upload the file and add an onSuccessListener to get the download URL
-        imageRef.putFile(profilePictureUri)
-                .addOnSuccessListener(taskSnapshot -> {
-                    // Get the download URL
-                    imageRef.getDownloadUrl().addOnSuccessListener(downloadUri -> {
-                        // Store the download URL in Firestore user document
-                        Map<String, Object> updateData = new HashMap<>();
-                        updateData.put("profilePicUrl", downloadUri.toString());
-
-                        db.collection("users").document(userId)
-                                .update(updateData)
-                                .addOnSuccessListener(aVoid -> {
-                                    Toast.makeText(EditProfilePictureActivity.this, "Profile picture updated successfully.", Toast.LENGTH_SHORT).show();
-                                })
-                                .addOnFailureListener(e -> {
-                                    Toast.makeText(EditProfilePictureActivity.this, "Failed to update profile picture URL in user document.", Toast.LENGTH_SHORT).show();
-                                });
+                    })
+                    .addOnFailureListener(e -> {
+                        progressDialog.dismiss(); // Dismiss progress dialog on failure
+                        Toast.makeText(EditProfilePictureActivity.this, "Failed to upload image.", Toast.LENGTH_SHORT).show();
                     });
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(EditProfilePictureActivity.this, "Failed to upload image.", Toast.LENGTH_SHORT).show();
-                });
+        }
     }
 }

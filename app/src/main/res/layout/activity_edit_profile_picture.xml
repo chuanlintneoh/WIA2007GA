@@ -25,7 +25,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="30sp"
             android:gravity="center"
             android:text="Edit Profile Picture"
             android:fontFamily="@font/germania_one"
@@ -39,22 +39,14 @@
         android:layout_width="307dp"
         android:layout_height="350dp"
         android:layout_gravity="center"
-        android:layout_marginTop="80dp"
-        app:srcCompat="@drawable/user_big"/>
-
-    <Button
-        android:id="@+id/btnRemovePhoto"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_gravity="center"
-        android:text="Remove Photo"/>
+        android:layout_marginTop="50sp"
+        app:srcCompat="@drawable/user_big" />
 
     <Button
         android:id="@+id/btnTakePhoto"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_margin="5dp"
         android:layout_gravity="center"
         android:text="Take Photo"/>
 
@@ -62,7 +54,7 @@
         android:id="@+id/btnChoosePhoto"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_margin="5dp"
         android:layout_gravity="center"
         android:text="Choose Photo"/>
 
@@ -70,7 +62,7 @@
         android:id="@+id/btnApplyChanges"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_margin="5dp"
         android:layout_gravity="center"
         android:text="Apply Changes"/>
 </LinearLayout>

@@ -12,15 +12,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.ecoventur.R;
 import com.example.ecoventur.ui.ecorewards.models.Transaction;
 
-import java.util.List;
+import java.util.ArrayList;
 
 public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.ViewHolder> {
 
     private Context context;
-    private List<Transaction> transactionList;
+    private ArrayList<Transaction> transactionList;
     private boolean isEarning;
 
-    public TransactionAdapter(Context context, List<Transaction> transactionList, boolean isEarning) {
+    public TransactionAdapter(Context context, ArrayList<Transaction> transactionList, boolean isEarning) {
         this.context = context;
         this.transactionList = transactionList;
         this.isEarning = isEarning;
@@ -36,7 +36,7 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Transaction transaction = transactionList.get(position);
-        holder.textVoucherTitle.setText(transaction.getVoucherTitle());
+        holder.textVoucherTitle.setText(transaction.getTransactionTitle());
         int ecoCoins = transaction.getEcoCoins();
 
         if (isEarning) {
@@ -51,7 +51,7 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
         return transactionList.size();
     }
 
-    public void setTransactionList(List<Transaction> transactions) {
+    public void setTransactionList(ArrayList<Transaction> transactions) {
         this.transactionList = transactions;
         notifyDataSetChanged();
     }

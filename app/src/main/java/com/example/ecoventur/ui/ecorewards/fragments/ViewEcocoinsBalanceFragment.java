@@ -6,7 +6,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -18,58 +17,36 @@ import android.widget.TextView;
 
 import com.example.ecoventur.R;
 import com.example.ecoventur.ui.ecorewards.adapters.TransactionAdapter;
+import com.example.ecoventur.ui.ecorewards.models.Transaction;
 import com.example.ecoventur.ui.ecorewards.viewModels.ViewEcocoinsBalanceViewModel;
+import com.example.ecoventur.ui.greenspace.Callback;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 
 public class ViewEcocoinsBalanceFragment extends Fragment {
 
-    private ViewEcocoinsBalanceViewModel viewModel;
+    private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    private String UID;
+    private ViewEcocoinsBalanceViewModel viewEcocoinsBalanceViewModel;
     private TransactionAdapter spendingAdapter;
     private TransactionAdapter earningAdapter;
+    private int ecocoin = -1;
     private TextView ecocoinsbalance;
     private FirebaseFirestore db;
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        viewModel = new ViewModelProvider(this).get(ViewEcocoinsBalanceViewModel.class);
-        viewModel.getSpending().observe(getViewLifecycleOwner(), spendingList -> {
-            if (spendingList != null && !spendingList.isEmpty()) {
-                spendingAdapter.setTransactionList(spendingList);
-                viewModel.calculateBalance(); // Recalculate balance when spending data changes
-            } else {
-                Log.d("e002 Fragment", "Received empty spendings list or null");
-            }
-        });
-
-        viewModel.getEarning().observe(getViewLifecycleOwner(), earningList -> {
-            if (earningList != null && !earningList.isEmpty()) {
-                earningAdapter.setTransactionList(earningList);
-                viewModel.calculateBalance(); // Recalculate balance when earning data changes
-            } else {
-                Log.d("e002 Fragment", "Received empty earnings list or null");
-            }
-        });
-
-        viewModel.getBalance().observe(getViewLifecycleOwner(), balance -> {
-            if (balance != null) {
-                ecocoinsbalance.setText(balance + " ec");
-            } else {
-                Log.d("e002 Fragment", "Received null balance");
-            }
-        });
-
-        viewModel.fetchDataFromFirestore();
-    }
-
-    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRetainInstance(true);
-        viewModel = new ViewModelProvider(this).get(ViewEcocoinsBalanceViewModel.class);
+        if (user != null) {
+            UID = user.getUid();
+        }
+        else {
+            Log.e("ViewEcocoinsBalanceFragment", "User is not logged in.");
+        }
+        viewEcocoinsBalanceViewModel = new ViewEcocoinsBalanceViewModel(UID);
     }
 
     @Override
@@ -84,54 +61,48 @@ public class ViewEcocoinsBalanceFragment extends Fragment {
 
         // Find the TextView for ecocoinsbalance
         ecocoinsbalance = view.findViewById(R.id.ecocoinsbalance);
-
-        RecyclerView spendingRecyclerView = view.findViewById(R.id.spendingView);
-        spendingRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        spendingAdapter = new TransactionAdapter(requireContext(), new ArrayList<>(), false);
-        spendingRecyclerView.setAdapter(spendingAdapter);
-
         RecyclerView earningRecyclerView = view.findViewById(R.id.earningView);
-        earningRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        earningAdapter = new TransactionAdapter(requireContext(), new ArrayList<>(), true);
-        earningRecyclerView.setAdapter(earningAdapter);
+        RecyclerView spendingRecyclerView = view.findViewById(R.id.spendingView);
 
-        db = FirebaseFirestore.getInstance();
+        viewEcocoinsBalanceViewModel.retrieveEcocoinsBalance(new Callback() {
+            @Override
+            public void onDataLoaded(Object data) {
+                ecocoin = viewEcocoinsBalanceViewModel.getEcocoinsBalance();
+                ecocoinsbalance.setText((int) data + " ec");
+            }
 
-        observeViewModel();
+            @Override
+            public void onFailure(Exception exception) {
+                Log.e("ViewEcocoinsBalanceFragment", "Error retrieving ecocoins balance: " + exception.getMessage());
+            }
+        });
+
+        viewEcocoinsBalanceViewModel.retrieveEarningList(new Callback() {
+            @Override
+            public void onDataLoaded(Object data) {
+                earningRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+                earningAdapter = new TransactionAdapter(requireContext(), (ArrayList<Transaction>) data, true);
+                earningRecyclerView.setAdapter(earningAdapter);
+            }
+            @Override
+            public void onFailure(Exception exception) {
+                Log.e("ViewEcocoinsBalanceFragment", "Error retrieving earning list: " + exception.getMessage());
+            }
+        });
+
+        viewEcocoinsBalanceViewModel.retrieveSpendingList(new Callback() {
+            @Override
+            public void onDataLoaded(Object data) {
+                spendingRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+                spendingAdapter = new TransactionAdapter(requireContext(), (ArrayList<Transaction>) data, false);
+                spendingRecyclerView.setAdapter(spendingAdapter);
+            }
+            @Override
+            public void onFailure(Exception exception) {
+                Log.e("ViewEcocoinsBalanceFragment", "Error retrieving spending list: " + exception.getMessage());
+            }
+        });
 
         return view;
-    }
-
-    private void observeViewModel() {
-        viewModel.getSpending().observe(getViewLifecycleOwner(), spendingList -> {
-            if (spendingList != null && !spendingList.isEmpty()) {
-                spendingAdapter.setTransactionList(spendingList);
-            } else {
-                Log.d("e002 Fragment", "Received empty spendings list or null");
-            }
-        });
-
-        viewModel.getEarning().observe(getViewLifecycleOwner(), earningList -> {
-            if (earningList != null && !earningList.isEmpty()) {
-                earningAdapter.setTransactionList(earningList);
-            } else {
-                Log.d("e002 Fragment", "Received empty earnings list or null");
-            }
-        });
-
-        viewModel.getBalance().observe(getViewLifecycleOwner(), balance -> {
-            if (balance != null) {
-                ecocoinsbalance.setText(balance + " ec");
-            } else {
-                Log.d("e002 Fragment", "Received null balance");
-            }
-        });
-
-        // Observe changes in spending and earning lists
-        viewModel.observeSpendingList(viewModel.getSpending());
-        viewModel.observeEarningList(viewModel.getEarning());
-
-        viewModel.fetchDataFromFirestore();
-        viewModel.calculateBalance();
     }
 }

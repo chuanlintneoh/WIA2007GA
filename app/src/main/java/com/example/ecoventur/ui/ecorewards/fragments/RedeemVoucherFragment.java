@@ -190,7 +190,7 @@ public class RedeemVoucherFragment extends Fragment {
                     bundle.putBoolean("isActiveVoucher", true);
                     bundle.putBoolean("redemptionConfirmed", true); //delete if crash
 
-//                    Navigation.findNavController(requireView()).navigate(R.id.action_e001_to_e00101, bundle);
+                    Navigation.findNavController(requireView()).navigate(R.id.action_e001_to_e00101, bundle);
 
                 }
             }

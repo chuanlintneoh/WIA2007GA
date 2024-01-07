@@ -143,7 +143,6 @@ public class TransitFragment extends Fragment {
 
         //Fetch data from firestore
         fetchAllChallenging(userID);
-        fetchAllChallenges();
         fetchAllCompleted(userID);
 
 
@@ -254,12 +253,20 @@ public class TransitFragment extends Fragment {
 
                             for (DocumentSnapshot document : documents) {
                                 DocumentReference challengingIDRef = document.getDocumentReference("challengingID");
-                                fetchSpecificChallengingChallenge(challengingIDRef);
+
+                                if (challengingIDRef != null) {
+                                    fetchSpecificChallengingChallenge(challengingIDRef);
+                                }
+                                else {
+                                    Log.e("FirebaseFetch (Challenging)", "challengingIDRef is null for document ID: " + document.getId());
+                                }
                             }
 
                             // Log the message with the record count
                             String message = recordCount + " records fetched from Firebase";
                             Log.d("FirebaseFetch (Challenging)", message);
+
+                            fetchAllChallenges();
                         } catch (Exception e) {
                             Log.e("FirebaseFetch (Challenging)", "Exception while processing documents: " + e.getMessage());
                         }

@@ -37,7 +37,6 @@ public class UserFragment extends Fragment {
 
     Activity context;
     ImageView profilepic;
-    ProgressBar progressBar;
     String personPhone;
     String personName;
     Long personEcocoin;
@@ -140,18 +139,15 @@ public class UserFragment extends Fragment {
                 dialogView.findViewById(R.id.editpassword).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        progressBar.setVisibility(View.VISIBLE);
                         auth.sendPasswordResetEmail(strEmail).addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void unused) {
                                 Toast.makeText(getActivity(), "Reset password link has been sent", Toast.LENGTH_SHORT).show();
-                                progressBar.setVisibility(View.INVISIBLE);
                             }
                         }).addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
                                 Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();
-                                progressBar.setVisibility(View.INVISIBLE);
                             }
                         });
                         dialog.dismiss(); // Dismiss the current dialog

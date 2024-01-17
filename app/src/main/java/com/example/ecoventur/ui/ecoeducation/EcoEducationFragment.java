@@ -78,9 +78,9 @@ public class EcoEducationFragment extends Fragment {
         String formattedDate = currentDate.format(formatter);
         if (!date.equals(formattedDate)) {
             FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-            // Reference to the "tutorials" collection
-            CollectionReference tutorialsRef = firestore.collection("dailyTips");
-            tutorialsRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            // Reference to the "dailyTips" collection
+            CollectionReference dailyTipsRef = firestore.collection("dailyTips");
+            dailyTipsRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
                     if (task.isSuccessful()) {
@@ -129,7 +129,7 @@ public class EcoEducationFragment extends Fragment {
                 }
             }
         });
-        // Reference to the "tutorials" collection
+        // Reference to the "articles" collection
         CollectionReference articlesRef = firestore.collection("articles");
 
         // Get all documents in the collection
